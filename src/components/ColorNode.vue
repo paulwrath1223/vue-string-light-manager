@@ -1,18 +1,21 @@
 <template>
-  <div class = "colorNode" :style="{backgroundColor: color, color: inverse()}" > <!-- color: inverse()-->
-    <div class="up">
-      <div>
-        <span>Transition Frames: </span>
-        <input type=number v-model=transitionFrames v-on:keyup.enter=inputUpdate>
-      </div>
-      <button @click=deleteColorNode>-</button>
+  <div class="card m-3" :style="{backgroundColor: color, color: inverse()}">
+    <div class="card-header" >
+      color{{id}}: {{color}}
+      <button class="btn btn-danger" id="btn-delete" @click=deleteColorNode>x</button>
     </div>
-    <div class="down">
-      <span>Change color: </span>
-      <input id="colorPicker" type=color v-model="color" @change=colorChanged>
+    <div class="card-body">
+      <form>
+        <div class="mb-1 mt-1">
+          <label for="transitionFrames" class="form-label small">Transition Frames:</label>
+          <input class="form-control small" id="transitionFrames" type=number v-model=transitionFrames v-on:keyup.enter=inputUpdate>
+        </div>
+        <div class="mt-2">
+            <input type="color" class="form-control-color small" v-model="color" @change=colorChanged>
+        </div>
+      </form>
     </div>
   </div>
-<!--  <div>Id: {{id}}</div>-->
 </template>
 
 <script>
@@ -79,53 +82,14 @@ export default {
 </script>
 
 <style scoped>
-.colorNode{
-  border-color: green;
-  border-width: 2px;
-  border-radius: 10%;
-  /*background-color: var(color);*/
-  width: 300px;
-  height: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: 20px;
-}
-.up{
-  margin: 5px;
-  display: flex;
-  justify-content: space-between;
-  background-color: inherit;
-  color: inherit;
-}
-.down{
-  margin: 5px;
-  display: flex;
-  justify-content: center;
-  background-color: inherit;
-  color: inherit;
-}
-span{
-  margin: 10px;
-  mix-blend-mode: difference;
-
-}
-button{
-  height: 20px;
-  width: 25px;
-  border-radius: 15%;
-  background-color: inherit;
-  color: inherit;
-  text-align: center;
-  border: 4px white;
-  margin: 5px;
-}
-button:hover{
-  border: 5px white;
-  color: yellow;
-  cursor: pointer;
-}
-input{
-  border-radius: 5px;
+#btn-delete{
+  margin: 0;
+  padding: 0;
+  line-height: 20px;
+  width: 30px;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  /*align-self: flex-end;*/
 }
 </style>

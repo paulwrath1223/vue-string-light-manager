@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="container p-5 my-5 border">
     <div class="colorNodes">
       <color-node v-for="(node, i) in colorNodes" :id="i"></color-node>
     </div>
-    <button @click="addColorNode">Add</button>
+    <button id="btn-add" class="btn btn-info" @click="addColorNode">+</button>
   </div>
 </template>
 
@@ -34,6 +34,11 @@ export default {
 .colorNodes{
   display: flex;
   flex-wrap: wrap;
-  background-color: gray;
+  /*background-color: gray;*/
+}
+
+#btn-add{
+  width: 60px;
+  line-height: 20px;
 }
 </style>

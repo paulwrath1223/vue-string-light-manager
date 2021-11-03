@@ -1,38 +1,48 @@
 <template>
-  <div class="arduinoProperties">
-    <div class="dropdown">
-      <button
-          class="btn btn-secondary dropdown-toggle"
-          type="button"
-          id="dropdownMenuButton1"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-      >Choose id</button>
-      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen(id)">{{id}}</a></li>
-      </ul>
-      <div id="currentID" v-if="currentID >= 0" class="badge bg-primary">{{currentID}}</div>
-    </div>
+  <div class="arduinoProperties mt-0">
+    <form class="align-self-center center" >
+      <div class="dropdown">
+        <button
+            class="btn btn-primary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton1"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+        >Choose id</button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          <li><h5 class="dropdown-header">Choose id from database</h5></li>
+          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen(id); this.idInputVisible=false">{{id}}</a></li>
+          <li><h5 class="dropdown-header">Create a new id</h5></li>
+          <li class="dropdown-item" @click="ToggleIdInputVisibility" href="#">New id</li>
+        </ul>
 
-    <div class="form-check form-check-inline">
-      <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-      <label class="form-check-label" for="inlineCheckbox1">Turned on</label>
-    </div>
+        <div v-show="idInputVisible" class="mt-3">
+          <input class="form-control" type="number" placeholder="Input new id" v-model="idInputValue" @keydown.enter="UpdateCurrentID">
+        </div>
 
-    <div class="mb-3">
-      <div>Location: {{location}}</div>
-      <input type="text" v-model="location" class="form-control">
-    </div>
+        <h1 id="currentID" v-show="currentID >= 0">{{currentID}}</h1>
+      </div>
 
-    <div class="mb-3">
-      <div>Number of lights: {{numLights}}</div>
-      <input type="number" v-model="numLights" class="form-control">
-    </div>
+      <div class="form-check form-switch" >
+        <input class="form-check-input" type="checkbox" value="yes" checked>
+        <div>Turn on</div>
+      </div>
 
-    <div class="mb-3">
-      <div>Speed: {{speed}}</div>
-      <input type="range" v-model="speed" class="form-control" :min="min" :max="max" :disabled="numLights <= 0">
-    </div>
+      <div class="mb-3">
+        <div>Location: {{location}}</div>
+        <input type="text" v-model="location" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <div>Number of lights: {{numLights}}</div>
+        <input type="number" v-model="numLights" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <div>Speed: {{speed}}</div>
+        <input type="range" v-model="speed" class="form-control" :min="min" :max="max" :disabled="numLights <= 0">
+      </div>
+    </form>
   </div>
 </template>
 
@@ -45,6 +55,8 @@ export default {
       speed: 0,
       numLights: 0,
       currentID: -1,
+      idInputValue: 0,
+      idInputVisible: false,
       location: ""
     }
   },
@@ -72,6 +84,13 @@ export default {
     IDChosen(id){
       this.currentID = id
       console.log("id clicked: "+id)
+    },
+    ToggleIdInputVisibility(){
+      this.idInputVisible = !this.idInputVisible
+      this.currentID = -1
+    },
+    UpdateCurrentID(){
+      this.currentID = this.idInputValue
     }
   }
 }
@@ -89,5 +108,13 @@ export default {
 #currentID{
   padding-top: 20px;
 
+}
+
+.center{
+  margin: 0 auto
+}
+
+form{
+  max-width: 500px;
 }
 </style>
