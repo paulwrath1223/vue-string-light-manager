@@ -23,10 +23,13 @@
         <h1 id="currentID" v-show="currentID >= 0">{{currentID}}</h1>
       </div>
 
-      <div class="form-check form-switch" >
+      <div class="form-check form-switch">
+        Enable
         <input class="form-check-input" type="checkbox" value="yes" checked>
-        <div>Turn on</div>
       </div>
+
+
+
 
       <div class="mb-3">
         <div>Location: {{location}}</div>
