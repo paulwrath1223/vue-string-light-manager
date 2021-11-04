@@ -25,7 +25,7 @@ const firebaseConfig = {
     authDomain: "light-data1.firebaseapp.com",
     databaseURL: "https://light-data1-default-rtdb.firebaseio.com",
     projectId: "light-data1",
-    storageBucket: "light-data1.appspot.com",
+    storageBucket: "light-data1.appoint.com",
     messagingSenderId: "253519292577",
     appId: "1:253519292577:web:13dec18f6bb511ef4a68e0",
     measurementId: "G-R5NM0KT8LC"
@@ -33,7 +33,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+
 const provider = new GoogleAuthProvider();
 
 
@@ -53,23 +53,24 @@ async function signIn() {
             // The signed-in user info.
             user = result.user;
             // ...
-        }).catch((error) => {
-            // Handle Errors here.
-            // const errorCode = error.code;
-            // const errorMessage = error.message;
-            // // The email of the user's account used.
-            // const email = error.email;
-            // // The AuthCredential type that was used.
-            // const credential = GoogleAuthProvider.credentialFromError(error);
-            // ...
         });
+        // .catch((error) => {
+        //     // Handle Errors here.
+        //     // const errorCode = error.code;
+        //     // const errorMessage = error.message;
+        //     // // The email of the user's account used.
+        //     // const email = error.email;
+        //     // // The AuthCredential type that was used.
+        //     // const credential = GoogleAuthProvider.credentialFromError(error);
+        //     // ...
+        // });
 }
 
-function delay(delayInms) {
+function delay(delayInMs) {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve(2);
-        }, delayInms);
+        }, delayInMs);
     });
 }
 
@@ -77,7 +78,7 @@ function delay(delayInms) {
 async function uploadArduino(id, json)
 {
 
-    verifyUser()
+    await verifyUser()
     while(user === "[loading]")
     {
         await delay(10)
@@ -90,7 +91,7 @@ async function uploadArduino(id, json)
 async function downloadArduino(id)
 {
 
-    verifyUser()
+    await verifyUser()
     while(user === "[loading]")
     {
         await delay(10)
