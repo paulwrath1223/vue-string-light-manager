@@ -28,13 +28,20 @@ export default {
     }
   },
   props:{
-    id: Intl
+    id: Intl,
   },
   computed:{
+    currentID: {
+      get(){
+        return this.$store.state.currentArduinoID
+      },
+      set(value){
+        this.$store.commit('changeCurrentArduinoID', {id: value})
+      },
     color: {
       get() {
         console.log("id: "+this.id)
-        return this.$store.state.colors[this.id].color
+        return this.$store.state.arduinoList[this.currentID].colors[this.id].color
       },
       set(value) {
         this.$store.commit('changeColorOfColorNode', {id: this.id, color: value})
@@ -43,7 +50,7 @@ export default {
     },
     transitionFrames: {
       get(){
-        return this.$store.state.colors[this.id].transitionFrames
+        return this.$store.state.arduinoList[this.currentID].colors[this.id].transitionFrames
       },
       set(value){
         this.$store.commit('changeTransitionFramesOfColorNode', {id: this.id, transitionFrames: value})
@@ -74,11 +81,12 @@ export default {
 
     deleteColorNode(){
       console.log("color node was deleted")
+      this.$store.commit('deleteColorNode', {id: this.id})
+      console.log(this.$store.arduinoList[this.currentID])
     }
 
-  },
-
-}
+  }
+},}
 </script>
 
 <style scoped>
