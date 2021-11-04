@@ -8,7 +8,7 @@ import store from './store'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue } from "firebase/database";
-import { getAuth, signInWithPopup, GoogleAuthProvider, getIdToken, isSignInWithEmailLink } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 
 
@@ -38,50 +38,88 @@ const provider = new GoogleAuthProvider();
 
 
 const auth = getAuth();
-const user = auth.currentUser;
+let user = null;
+let credential;
+let token;
+
 async function signIn() {
-    await signInWithPopup(auth, provider)
+    user = "[loading]"
+    console.log("sign in function begin")
+    return signInWithPopup(auth, provider)
         .then((result) => {
             // This gives you a Google Access Token. You can use it to access the Google API.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
+            credential = GoogleAuthProvider.credentialFromResult(result);
+            token = credential.accessToken;
             // The signed-in user info.
-            const user = result.user;
+            user = result.user;
             // ...
         }).catch((error) => {
             // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.email;
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
+            // const errorCode = error.code;
+            // const errorMessage = error.message;
+            // // The email of the user's account used.
+            // const email = error.email;
+            // // The AuthCredential type that was used.
+            // const credential = GoogleAuthProvider.credentialFromError(error);
             // ...
         });
 }
 
-function uploadArduino(id, json) {
+function delay(delayInms) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(2);
+        }, delayInms);
+    });
+}
+
+
+async function uploadArduino(id, json)
+{
+
+    verifyUser()
+    while(user === "[loading]")
+    {
+        await delay(10)
+    }
+
     const db = getDatabase(app);
     return(set(ref(db, 'Arduino' + id + '/'), json));
 }
 
-function downloadArduino(id){
+async function downloadArduino(id)
+{
+
+    verifyUser()
+    while(user === "[loading]")
+    {
+        await delay(10)
+    }
+
+
     const db = getDatabase(app);
 
-    const tempPath = ('Arduino' + id + '/Name');
+    const tempPath = ('Arduino' + id);
     const nameRef = ref(db, tempPath);
     onValue(nameRef, (snapshot) => {
-        const data = snapshot.val();
-        console.log(data);
+        const data = snapshot.toJSON();
+        const str = JSON.stringify(data, null, 2); // spacing level = 2
+        console.log("arduino: " + str);
+        return data;
     });
 
 }
-console.log(auth.toString());
+console.log("user: " + user);
 
-if(user == null)
+async function verifyUser()
 {
-    signIn();
+    if(user == null)
+    {
+        await signIn();
+    }
+    console.log("user: " + user);
 }
+
 stuff();
 
 createApp(App).use(store).mount('#app')
@@ -89,10 +127,10 @@ createApp(App).use(store).mount('#app')
 
 
 
-function stuff()
+async function stuff()
 {
     console.log("uploadArduino:");
-    console.log(uploadArduino(0,
+    console.log(await uploadArduino(0,
         {
             "Name" : "voj-ta sus icky",
             "colorLength" : 44,
@@ -116,7 +154,7 @@ function stuff()
             "update" : false
         }));
 
-    downloadArduino(0)
+    await downloadArduino(0)
 }
 
 
