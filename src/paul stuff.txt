@@ -24,47 +24,43 @@ cURL method:
       <script src="https://light-data1-default-rtdb.firebaseio.com/.json?auth=xnsxVJEbZchsxN2XPCkxAPhlZXdvWBt318oq98jh&callback=gotData">
 
 
-other thing idfk
-// Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set, onValue} from "firebase/database";
+COLOR COMPILER FROM C#:
 
-
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-    apiKey: "AIzaSyBvzbSDl_9Z58G4cXnaFJIuH1MT5uUOmkw",
-    authDomain: "light-data1.firebaseapp.com",
-    databaseURL: "https://light-data1-default-rtdb.firebaseio.com",
-    projectId: "light-data1",
-    storageBucket: "light-data1.appspot.com",
-    messagingSenderId: "253519292577",
-    appId: "1:253519292577:web:13dec18f6bb511ef4a68e0",
-    measurementId: "G-R5NM0KT8LC"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-
-async function uploadArduino(id, json) {
-    const db = getDatabase();
-    await set(ref(db, 'Arduino' + id + '/'), json);
-}
-
-function downloadArduino(id){
-    const db = getDatabase();
-    const nameRef = ref(db, 'Arduino' + id + '/Name');
-    onValue(nameRef, (snapshot) => {
-        const data = snapshot.val();
-        updateStarCount(postElement, data);
-    });
-
-}
-
-
-
-
-downloadArduino(0)
+private List<RGBColorBasic> ColorCompiler(List<RGBColor> colorsIn)
+        {
+            List<RGBColorBasic> colorsOut = new List<RGBColorBasic>();
+            RGBColor CurrentColor;
+            RGBColor NextColor;
+            float dr;
+            float dg;
+            float db;
+            List<int> rs = new List<int>();
+            List<int> gs = new List<int>();
+            List<int> bs = new List<int>();
+            for (int index = 0; index < colorsIn.Count(); index++)
+            {
+                if(index + 1 == colorsIn.Count())
+                {
+                    NextColor = colorsIn[0];
+                }
+                else
+                {
+                    NextColor = colorsIn[index + 1];
+                }
+                CurrentColor = colorsIn[index];
+                dr = (float)(NextColor._r - CurrentColor._r) / (float)(CurrentColor._transitionFrames - 1);
+                dg = (float)(NextColor._g - CurrentColor._g) / (float)(CurrentColor._transitionFrames - 1);
+                db = (float)(NextColor._b - CurrentColor._b) / (float)(CurrentColor._transitionFrames - 1);
+                for (int index2 = 0; index2 < CurrentColor._transitionFrames; index2++)
+                {
+                    rs.Add(CurrentColor._r + (int)((float)index2 * dr));
+                    gs.Add(CurrentColor._g + (int)((float)index2 * dg));
+                    bs.Add(CurrentColor._b + (int)((float)index2 * db));
+                }
+            }
+            for(int index3 = 0; index3 < rs.Count; index3++)
+            {
+                colorsOut.Add(new RGBColorBasic(rs[index3], gs[index3], bs[index3]));
+            }
+            return colorsOut;
+        }
