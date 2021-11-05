@@ -43,8 +43,8 @@ let credential;
 let token;
 
 async function signIn() {
-    user = "[loading]"
-    console.log("sign in function begin")
+    user = "[loading]";
+    console.log("sign in function begin");
     return signInWithPopup(auth, provider)
         .then((result) => {
             // This gives you a Google Access Token. You can use it to access the Google API.
@@ -121,14 +121,23 @@ async function verifyUser()
     console.log("user: " + user);
 }
 
-stuff();
+function Color(red,green,blue)
+{
+    this.red = red;
+    this.green = green;
+    this.blue = blue;
+}
+
+const red = new Color(255,0,0)
+const green = new Color(0,255,0)
+const blue = new Color(0,0,255);
+
+
+testing();
 
 createApp(App).use(store).mount('#app')
 
-
-
-
-async function stuff()
+async function testing()
 {
     console.log("uploadArduino:");
     console.log(await uploadArduino(0,
