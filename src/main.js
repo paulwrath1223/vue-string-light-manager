@@ -121,16 +121,42 @@ async function verifyUser()
     console.log("user: " + user);
 }
 
-function Color(red,green,blue)
+class Color
 {
-    this.red = red;
-    this.green = green;
-    this.blue = blue;
+    constructor(redIn,greenIn,blueIn) {
+        this.r = redIn;
+        this.g = greenIn;
+        this.b = blueIn;
+    }
+
 }
 
-const red = new Color(255,0,0)
-const green = new Color(0,255,0)
-const blue = new Color(0,0,255);
+class ColorList
+{
+    constructor() {
+        this.colors = [];
+    }
+
+    addColor(ri, gi, bi)
+    {
+        let temp = new Color(ri, bi, gi);
+        this.colors.push(temp);
+    }
+
+    get colors()
+    {
+        return this.colors;
+    }
+
+}
+
+let exampleColor = new Color(69, 100, 100)
+
+
+function colorCompile()
+{
+
+}
 
 
 testing();
