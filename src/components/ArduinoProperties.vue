@@ -74,7 +74,7 @@ export default {
         return ids
       },
       set(value){
-        console.log("arduinoList cannot be edited to: "+value)
+        console.log("arduinoIdsList cannot be edited to: "+value)
       },
     },
 
@@ -135,7 +135,7 @@ export default {
   methods: {
     IDChosen(event, id){
       this.currentID = id
-      console.log("Arduino ID: "+ this.$store.getters.getArduinoByID(this.currentID))
+      console.log(this.$store.getters.getArduinoByID(this.currentID))
       console.log("Arduino index: "+this.$store.getters.getArduinoIndex)
 
     },
@@ -168,7 +168,7 @@ export default {
   max-width: 500px;
 }
 .switch{
-  width: 100px;
+  width: 60px;
   margin: 0 auto;
   align-self: center;
 }

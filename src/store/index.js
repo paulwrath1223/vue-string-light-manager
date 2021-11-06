@@ -53,20 +53,24 @@ export default createStore({
   mutations: {
 
     //arduino properties
-    changeCurrentArduinoID(state, getters, arduino){
+    changeCurrentArduinoID(state, arduino){
       state.currentArduinoID = arduino.id
     },
     changeSpeedOfCurrentArduinoID(state, arduino){
-      state.arduinoList[state.currentArduinoID].speed = arduino.speed
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].speed = arduino.speed
     },
     changeLocationOfCurrentArduinoID(state, arduino){
-      state.arduinoList[state.currentArduinoID].location = arduino.location
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].location = arduino.location
     },
     changeLightsCountOfCurrentArduinoID(state, arduino){
-      state.arduinoList[state.currentArduinoID].lightsCount = arduino.lightsCount
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].lightsCount = arduino.lightsCount
     },
     changeEnabledOfCurrentArduinoID(state, arduino){
-      state.arduinoList[state.currentArduinoID].enabled = arduino.enabled
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].enabled = arduino.enabled
     },
 
     //color node variables
@@ -89,6 +93,7 @@ export default createStore({
     }
   },
   actions: {
+
   },
   modules: {
   }
