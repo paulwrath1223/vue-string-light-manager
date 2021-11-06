@@ -1,6 +1,6 @@
 <template>
-  <div class="arduinoProperties mt-0">
-    <form class="align-self-center center" >
+  <div class="arduinoProperties mt-0 align-items-center">
+    <form class="align-self-center custom-centered">
       <div class="dropdown">
         <button
             class="btn btn-primary dropdown-toggle"
@@ -11,7 +11,7 @@
         >Choose id</button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           <li><h5 class="dropdown-header">Choose id from database</h5></li>
-          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen(id); this.idInputVisible=false">{{id}}</a></li>
+          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen($event, id); this.idInputVisible=false">{{id}}</a></li>
           <li><h5 class="dropdown-header">Create a new id</h5></li>
           <li class="dropdown-item" @click="ToggleIdInputVisibility" href="#">New id</li>
         </ul>
@@ -23,25 +23,27 @@
 
         <h1 id="currentID" v-show="currentID >= 0">{{currentID}}</h1>
       </div>
+    </form>
 
-      <div class="form-check form-switch" >
-        <input id="switch" class="form-check-input pull-left" type="checkbox" value="yes" checked>
-        <div>Turn on</div>
-      </div>
+    <div class="form-check form-switch input-group switch" >
+      <input class="form-check-input" type="checkbox" :disabled="currentID < 0" :checked="enabled">
+      <div class="">Turn on</div>
+    </div>
 
+    <form class="align-self-center custom-centered">
       <div class="input-group mb-3">
         <span class="input-group-text">Location: {{location}}</span>
-        <input type="text" class="form-control" placeholder="Location" v-model="localLocation" @keydown.enter="UpdateLocation">
+        <input type="text" class="form-control" placeholder="Location" v-model="localLocation" :disabled="currentID < 0" @keydown.enter="UpdateLocation">
       </div>
 
       <div class="input-group mb-3">
         <span class="input-group-text">Lights count: {{numLights}}</span>
-        <input type="number" class="form-control" placeholder="Lights count" v-model="localNumLights" @keydown.enter="UpdateNumLights">
+        <input type="number" class="form-control" placeholder="Lights count" v-model="localNumLights" :disabled="currentID < 0" @keydown.enter="UpdateNumLights">
       </div>
 
       <div class="input-group mb-3">
         <span class="input-group-text">Speed: {{speed}}</span>
-        <input type="number" class="form-control" placeholder="Speed" v-model="localSpeed" @keydown.enter="UpdateSpeed">
+        <input type="number" class="form-control" placeholder="Speed" v-model="localSpeed" :disabled="currentID < 0" @keydown.enter="UpdateSpeed">
       </div>
 
     </form>
@@ -54,13 +56,11 @@ export default {
   name: "ArduinoProperties",
   data(){
     return{
-      localSpeed: 0,
-      speed: 0,
-      localNumLights: 0,
-      numLights: 0,
+      localSpeed: null,
+      localNumLights: null,
       idInputValue: 0,
       idInputVisible: false,
-      localLocation: "None",
+      localLocation: "",
       location: ""
     }
   },
@@ -74,7 +74,7 @@ export default {
         return ids
       },
       set(value){
-        console.log("adruinoList cannot be edited to: "+value)
+        console.log("arduinoList cannot be edited to: "+value)
       },
     },
 
@@ -85,13 +85,59 @@ export default {
       set(value){
         this.$store.commit('changeCurrentArduinoID', {id: value})
       }
-    }
+    },
+
+    formDisabled: {
+      get: () => {
+        return this.$store.state.currentArduinoID < 0;
+      },
+      set: val => {
+        console.log("formDisabled cannot be changed to: " + val)
+      }
+    },
+
+    speed: {
+      get(){
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getSpeedByArduinoID
+      },
+      set(val) {
+        this.$store.commit('changeSpeedOfCurrentArduinoID', {speed: val})
+      }
+    },
+
+    numLights: {
+      get(){
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getLightsCountByArduinoID
+      },
+      set(val) {
+        this.$store.commit('changeLightsCountOfCurrentArduinoID', {lightsCount: val})
+      }
+    },
+
+    location: {
+      get(){
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getLocationByArduinoID
+      },
+      set(val) {
+        this.$store.commit('changeLocationOfCurrentArduinoID', {location: val})
+      }
+    },
+
+    enabled: {
+      get(){
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getEnabledByArduinoID
+      },
+      set(val) {
+        this.$store.commit('changeEnabledOfCurrentArduinoID', {enabled: val})
+      }
+    },
   },
   methods: {
-    IDChosen(id){
+    IDChosen(event, id){
       this.currentID = id
-      console.log("id clicked: "+id)
-      console.log(this.$store.getters.getArduinoByID(this.currentID))
+      console.log("Arduino ID: "+ this.$store.getters.getArduinoByID(this.currentID))
+      console.log("Arduino index: "+this.$store.getters.getArduinoIndex)
+
     },
     ToggleIdInputVisibility(){
       this.idInputVisible = !this.idInputVisible
@@ -102,41 +148,40 @@ export default {
     },
     UpdateLocation(){
       this.location = this.localLocation
+      this.localLocation = null
     },
     UpdateNumLights(){
       this.numLights = this.localNumLights
+      this.localNumLights = null
     },
     UpdateSpeed(){
       this.speed = this.localSpeed
+      this.localSpeed = null
     }
   }
 }
 </script>
 
 <style scoped>
+.custom-centered{
+  margin:0 auto;
+  max-width: 500px;
+}
+.switch{
+  width: 100px;
+  margin: 0 auto;
+  align-self: center;
+}
 .arduinoProperties{
   padding: 20px;
 }
 
-.form-check{
-  padding: 20px;
-}
+/*.form-check{*/
+/*  padding: 20px;*/
+/*}*/
 
 #currentID{
   padding-top: 20px;
 
-}
-
-#switch{
-  position: absolute;
-  left: 45%;
-}
-
-.center{
-  margin: 0 auto
-}
-
-form{
-  max-width: 500px;
 }
 </style>

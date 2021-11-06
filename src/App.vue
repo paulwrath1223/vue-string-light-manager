@@ -2,7 +2,7 @@
   <img alt="Vue logo" src="./assets/logo.png">
   <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
   <arduino-properties></arduino-properties>
-  <colors-panel></colors-panel>
+<!--  <colors-panel></colors-panel>-->
 </template>
 
 <script>

@@ -12,7 +12,9 @@ export default createStore({
       {
         arduinoID: "1358",
         speed: 0.7,
-        enabled: false,
+        location: "Door Arch",
+        lightsCount: 100,
+        enabled: true,
         updated: false,
         colors: [
             {color: "#FF0000", transitionFrames: 0},
@@ -24,14 +26,47 @@ export default createStore({
     ],
     currentArduinoID: -1
   },
+
   getters: {
     getArduinoByID: (state) => (id) =>{
       return state.arduinoList.find(arduino => arduino.arduinoID === id)
-    }
+    },
+    getArduinoIndex: (state, getters) => {
+      return state.arduinoList.indexOf(getters.getArduinoByID(state.currentArduinoID))
+      //return state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID).speed
+      //return getters.getArduinoByID.speed
+    },
+    getSpeedByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].speed
+    },
+    getLightsCountByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].lightsCount
+    },
+    getLocationByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].location
+    },
+    getEnabledByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].enabled
+    },
   },
+
   mutations: {
-    changeCurrentArduinoID(state, arduino){
+
+    //arduino properties
+    changeCurrentArduinoID(state, getters, arduino){
       state.currentArduinoID = arduino.id
+    },
+    changeSpeedOfCurrentArduinoID(state, arduino){
+      state.arduinoList[state.currentArduinoID].speed = arduino.speed
+    },
+    changeLocationOfCurrentArduinoID(state, arduino){
+      state.arduinoList[state.currentArduinoID].location = arduino.location
+    },
+    changeLightsCountOfCurrentArduinoID(state, arduino){
+      state.arduinoList[state.currentArduinoID].lightsCount = arduino.lightsCount
+    },
+    changeEnabledOfCurrentArduinoID(state, arduino){
+      state.arduinoList[state.currentArduinoID].enabled = arduino.enabled
     },
 
     //color node variables
@@ -52,7 +87,6 @@ export default createStore({
     deleteColorNode(state, colorNode){
       state.arduinoList[state.currentArduinoID].colors.slice(colorNode.id, 1)
     }
-
   },
   actions: {
   },
