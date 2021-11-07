@@ -8,12 +8,14 @@ export default createStore({
     //   {color: "#0000FF", transitionFrames: 2},
     //   {color: "#000000", transitionFrames: 3}
     // ],
+    currentArduinoID: -1,
     arduinoList: [
       {
         arduinoID: "1358",
         speed: 0.7,
         location: "Door Arch",
         lightsCount: 100,
+        mirrorIndex: null,
         enabled: true,
         updated: false,
         colors: [
@@ -24,7 +26,6 @@ export default createStore({
         ]
       },
     ],
-    currentArduinoID: -1
   },
 
   getters: {
@@ -48,6 +49,9 @@ export default createStore({
     getEnabledByArduinoID(state, getters){
       return state.arduinoList[getters.getArduinoIndex].enabled
     },
+    getColors: (state, getters) => {
+      return state.arduinoList[getters.getArduinoIndex].colors
+    }
   },
 
   mutations: {
@@ -75,21 +79,24 @@ export default createStore({
 
     //color node variables
     addColor(state){
-      state.arduinoList[state.currentArduinoID].colors.push(
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors.push(
           {
-            id: state.colors.length,
             color: "#000000",
             transitionFrames: 0
           })
     },
     changeColorOfColorNode(state, colorNode){
-      state.arduinoList[state.currentArduinoID].colors[colorNode.id].color = colorNode.color
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors[colorNode.id].color = colorNode.color
     },
     changeTransitionFramesOfColorNode(state, colorNode){
-      state.arduinoList[state.currentArduinoID].colors[colorNode.id].transitionFrames = colorNode.transitionFrames
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors[colorNode.id].transitionFrames = colorNode.transitionFrames
     },
     deleteColorNode(state, colorNode){
-      state.arduinoList[state.currentArduinoID].colors.slice(colorNode.id, 1)
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors.slice(colorNode.id, 1)
     }
   },
   actions: {

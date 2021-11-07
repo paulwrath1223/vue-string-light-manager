@@ -1,7 +1,7 @@
 <template>
   <div class="container p-5 my-5 border">
     <div class="colorNodes">
-      <color-node v-for="(node, i) in colorNodes" :id="i" current-arduino-i-d="currentArduinoID"></color-node>
+      <color-node v-for="(node, i) in colorNodes" :id="i"></color-node>
     </div>
     <button id="btn-add" class="btn btn-info" @click="addColorNode">+</button>
   </div>
@@ -20,13 +20,22 @@ export default {
         return this.$store.state.currentArduinoID
       },
       set(value) {
-        this.$store.commit('changeCurrentArduinoID', {id: value})
+        console.log("Colors panel can not change database.CurrentArduinoID to: " + value)
       },
     },
-    colorNodes(){
-      console.log("colors" + this.$store.state.arduinoList[this.currentID].colors)
-      return this.$store.state.arduinoList[this.currentID].colors
-    }
+
+    colorNodes:{
+      get(){
+        return (this.$store.state.currentArduinoID < 0) ? [] : this.$store.getters.getColors
+      },
+      set(value){
+        console.log("colors cannot be changed to: " + value)
+      }
+    },
+
+    // colorNodesCount(){
+    //   return this.colorNodes.length
+    // }
   },
   methods: {
     addColorNode(){

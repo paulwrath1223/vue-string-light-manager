@@ -2,7 +2,7 @@
   <img alt="Vue logo" src="./assets/logo.png">
   <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
   <arduino-properties></arduino-properties>
-<!--  <colors-panel></colors-panel>-->
+  <colors-panel v-show="this.$store.state.currentArduinoID >= 0"></colors-panel>
 </template>
 
 <script>
@@ -16,8 +16,19 @@ export default {
     HelloWorld,
     ColorsPanel,
     ArduinoProperties,
+  },
+  computed: {
+    colorPanelVisible: {
+      get: () => {
+        return this.$store.state.currentArduinoID < 0;
+      },
+      set: val => {
+        console.log("formDisabled cannot be changed to: " + val)
+      }
+    }
   }
 }
+
 </script>
 
 <style>

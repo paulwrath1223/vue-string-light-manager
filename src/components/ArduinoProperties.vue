@@ -87,14 +87,14 @@ export default {
       }
     },
 
-    formDisabled: {
-      get: () => {
-        return this.$store.state.currentArduinoID < 0;
-      },
-      set: val => {
-        console.log("formDisabled cannot be changed to: " + val)
-      }
-    },
+    // formDisabled: {
+    //   get: () => {
+    //     return this.$store.state.currentArduinoID < 0;
+    //   },
+    //   set: val => {
+    //     console.log("formDisabled cannot be changed to: " + val)
+    //   }
+    // },
 
     speed: {
       get(){
