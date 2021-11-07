@@ -25,6 +25,21 @@ export default createStore({
             {color: "#000000", transitionFrames: 3}
         ]
       },
+      {
+        arduinoID: "6532",
+        speed: 2,
+        location: "Hand Rail",
+        lightsCount: 50,
+        mirrorIndex: null,
+        enabled: false,
+        updated: false,
+        colors: [
+          {color: "#AF2345", transitionFrames: 8},
+          {color: "#234A46", transitionFrames: 7},
+          {color: "#11123F", transitionFrames: 6},
+          {color: "#23AB3E", transitionFrames: 5}
+        ]
+      },
     ],
   },
 
@@ -94,9 +109,15 @@ export default createStore({
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
       state.arduinoList[index].colors[colorNode.id].transitionFrames = colorNode.transitionFrames
     },
-    deleteColorNode(state, colorNode){
+    // deleteColorNode(state, colorNode){
+    //   let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+    //   state.arduinoList[index].colors.slice(colorNode.id, 1)
+    // }
+    deleteColorNode: (state, colorNode) => {
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
-      state.arduinoList[index].colors.slice(colorNode.id, 1)
+      const i = state.arduinoList[index].colors.map(item => item.id).indexOf(colorNode.id)
+      console.log("deleting item index: "+ colorNode.id)
+      state.arduinoList[index].colors.splice(colorNode.id, 1);
     }
   },
   actions: {

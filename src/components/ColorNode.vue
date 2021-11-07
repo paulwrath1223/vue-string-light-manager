@@ -52,7 +52,6 @@ export default {
 
     color: {
       get() {
-        console.log("colorNode id: "+this.id)
         return this.$store.getters.getColors[this.id].color
       },
       set(value) {
@@ -82,21 +81,16 @@ export default {
     },
 
     transitionFramesChanged(){
-      console.log("transitionFrames local: " + this.localTransitionFrames)
       this.transitionFrames = this.localTransitionFrames
-      console.log("transitionFrames database: " + this.transitionFrames)
     },
 
     colorChanged(){
-      console.log("color changed to: "+this.localColor)
       this.color = this.localColor
-      console.log("color database to: "+this.color)
-      // this.$store.commit('changeColorOfColorNode', this.id, this.color)
     },
 
     deleteColorNode(){
-      console.log("color node was deleted")
-      // this.$store.commit('deleteColorNode', {id: this.id})
+      console.log("delted colorNode id: "+ this.id)
+      this.$store.commit('deleteColorNode', {id: this.id})
       // console.log(this.$store.arduinoList[this.currentID])
     }
 

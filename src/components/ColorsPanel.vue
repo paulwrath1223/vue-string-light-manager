@@ -9,6 +9,7 @@
 
 <script>
 import ColorNode from "../components/ColorNode";
+
 export default {
   name: "ColorsPanel",
   components: {

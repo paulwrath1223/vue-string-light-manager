@@ -1,6 +1,7 @@
 <template>
   <div class="arduinoProperties mt-0 align-items-center">
     <form class="align-self-center custom-centered">
+      <!-- Dropdown -->
       <div class="dropdown">
         <button
             class="btn btn-primary dropdown-toggle"
@@ -25,26 +26,32 @@
       </div>
     </form>
 
+    <!-- Dropdown -->
     <div class="form-check form-switch input-group switch" >
       <input class="form-check-input" type="checkbox" :disabled="currentID < 0" :checked="enabled">
       <div class="">Turn on</div>
     </div>
 
+    <!-- Enabled switch -->
     <form class="align-self-center custom-centered">
       <div class="input-group mb-3">
         <span class="input-group-text">Location: {{location}}</span>
         <input type="text" class="form-control" placeholder="Location" v-model="localLocation" :disabled="currentID < 0" @keydown.enter="UpdateLocation">
       </div>
 
+      <!-- Lights count input -->
       <div class="input-group mb-3">
         <span class="input-group-text">Lights count: {{numLights}}</span>
         <input type="number" class="form-control" placeholder="Lights count" v-model="localNumLights" :disabled="currentID < 0" @keydown.enter="UpdateNumLights">
       </div>
 
+      <!-- Speed input -->
       <div class="input-group mb-3">
         <span class="input-group-text">Speed: {{speed}}</span>
         <input type="number" class="form-control" placeholder="Speed" v-model="localSpeed" :disabled="currentID < 0" @keydown.enter="UpdateSpeed">
       </div>
+
+<!--      <colors-panel v-show="this.$store.state.currentArduinoID >= 0"></colors-panel>-->
 
     </form>
   </div>
@@ -52,8 +59,13 @@
 
 <script>
 
+import ColorsPanel from "./ColorsPanel";
+
 export default {
   name: "ArduinoProperties",
+  components: {
+    ColorsPanel
+  },
   data(){
     return{
       localSpeed: null,
