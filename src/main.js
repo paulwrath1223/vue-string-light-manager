@@ -104,6 +104,13 @@ async function uploadArduino(arduino)
 
 async function downloadArduino(id)
 {
+          // speed: 0,
+          // numLights: 0,
+          // currentID: -1,
+          // idInputValue: 0,
+          // idInputVisible: false,
+          // location: ""
+
 
     await verifyUser();
     while(user === "[loading]")
@@ -117,11 +124,21 @@ async function downloadArduino(id)
     const tempPath = ('Arduino' + id);
     const nameRef = ref(db, tempPath);
     onValue(nameRef, (snapshot) => {
-        const data = snapshot.toJSON();
-        const str = JSON.stringify(data, null, 2); // spacing level = 2
+        const DBJSON = snapshot.toJSON();
+        const str = JSON.stringify(DBJSON, null, 2); // spacing level = 2
         console.log("arduino: " + str);
-        return data;
+        const arduinoOut = {
+            "speed": DBJSON.speed,
+            "numLights": DBJSON.numLights,
+            "currentID": id,
+            "idInputValue": 0,
+            "idInputVisible": false,
+            "location": DBJSON.Name
+        };
+        return arduinoOut;
     });
+
+
 
 }
 
