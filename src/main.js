@@ -9,6 +9,7 @@ import store from './store'
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue } from "firebase/database";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {colorNodesToRGBjson} from "@/colorCompiler&Dependencies";
 
 
 
@@ -53,8 +54,9 @@ async function signIn() {
             // The signed-in user info.
             user = result.user;
             // ...
-        });
-        // .catch((error) => {
+        }).catch((error) => {
+            console.log("sign in error!");
+            console.log(error.code);
         //     // Handle Errors here.
         //     // const errorCode = error.code;
         //     // const errorMessage = error.message;
@@ -63,7 +65,7 @@ async function signIn() {
         //     // // The AuthCredential type that was used.
         //     // const credential = GoogleAuthProvider.credentialFromError(error);
         //     // ...
-        // });
+        });
 }
 
 function delay(delayInMs) {
@@ -84,13 +86,16 @@ function getCurrentUserImage()
     return((user.photoURL).toString());
 }
 
-async function uploadArduino(id, json)
+
+async function uploadArduino(arduino)
 {
 
-    await verifyUser()
+    const id = arduino.currentID;
+    const json = arduinoToJson(arduino);
+    await verifyUser();
     while(user === "[loading]")
     {
-        await delay(10)
+        await delay(10);
     }
 
     const db = getDatabase(app);
@@ -100,10 +105,10 @@ async function uploadArduino(id, json)
 async function downloadArduino(id)
 {
 
-    await verifyUser()
+    await verifyUser();
     while(user === "[loading]")
     {
-        await delay(10)
+        await delay(10);
     }
 
 
@@ -119,7 +124,6 @@ async function downloadArduino(id)
     });
 
 }
-console.log("user: " + user);
 
 async function verifyUser()
 {
@@ -169,4 +173,24 @@ export async function testing()
     console.log("getCurrentUserImage(): " + getCurrentUserImage())
 }
 
+function arduinoToJson(arduino)
+{
+    let colorJSON = colorNodesToRGBjson(arduino);
+    return({
+        "Name": arduino.location,
+        "colorLength": colorJSON.length,
+        "colors": colorJSON,
+        "mirrorIndex" : arduino.mirrorIndex,
+        "numLights" : arduino.numLights, // doesnt exist yet in this branch
+        "speed" : arduino.speed,
+        "state" : arduino.state, // doesnt exist yet in this branch
+        "update" : true // ALWAYS TRUE
+    });
+}
 
+//       speed: 0,
+//       numLights: 0,
+//       currentID: -1,
+//       idInputValue: 0,
+//       idInputVisible: false,
+//       location: ""

@@ -1,3 +1,4 @@
+import {forEach} from "core-js/internals/array-iteration";
 
 
 function getRed(colorObject)
@@ -22,7 +23,28 @@ function buildHex(r, g, b)
 
 
 
-export function colorCompile(arduinoIn)
+function hexListToRGBJSON(hexList)
+{
+    let RGBjson = [];
+    for(const hex of hexList)
+    {
+        RGBjson.push(hexColorToJson(hex));
+    }
+    return(RGBjson);
+}
+
+function hexColorToJson(hexString)
+{
+    return({
+        "r": getRed(hexString),
+        "g": getGreen(hexString),
+        "b": getBlue(hexString)
+    });
+}
+
+
+
+function colorCompile(arduinoIn)
 {
     let colorsIn = arduinoIn.colors;
     let colorsOut = [];
@@ -62,5 +84,11 @@ export function colorCompile(arduinoIn)
     }
     console.log("colorsOut: ");
     console.log(colorsOut);
-    // return colorsOut;
+    return colorsOut;
+}
+
+export function colorNodesToRGBjson(arduinoIn)
+{
+    let hexList = colorCompile(arduinoIn);
+    return(hexListToRGBJSON(hexList));
 }
