@@ -80,18 +80,19 @@ export default {
   },
   methods:
   {
-    inverse2(figure){
-      return  ((figure & 0x000000) | (~figure & 0xFFFFFF))
-    },
-    inverse(){
-      return "#" + this.inverse2(parseInt(this.color.substr(1), 16))
-          .toString(16)
-          .padStart(6, "0")
-          .toUpperCase();
-    },
+    // inverse2(figure){
+    //   return  ((figure & 0x000000) | (~figure & 0xFFFFFF))
+    // },
+    // inverse(){
+    //   return "#" + this.inverse2(parseInt(this.color.substr(1), 16))
+    //       .toString(16)
+    //       .padStart(6, "0")
+    //       .toUpperCase();
+    // },
 
     transitionFramesChanged(){
       this.transitionFrames = this.localTransitionFrames
+      this.localTransitionFrames = null
     },
 
     colorChanged(event){

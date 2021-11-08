@@ -29,44 +29,42 @@
 
     <!-- Enabled toggle switch -->
     <div class="form-check form-switch mx-auto" style="width: 70px">
-      <input class="form-check-input" type="checkbox" :disabled="currentID < 0" :checked="enabled">
+      <input class="form-check-input" type="checkbox" :disabled="formDisabled" :checked="enabled">
       <label class="form-check-label mx-2" id="enabledSwitchLabel" >Enabled</label>
     </div>
 
-    <!-- Location switch -->
     <form class="align-self-center custom-centered">
+      <!-- Location switch -->
       <div class="input-group mb-3">
         <span class="input-group-text">Location: {{location}}</span>
-        <input type="text" class="form-control" placeholder="Location" v-model="localLocation" :disabled="currentID < 0" @keydown.enter="UpdateLocation">
+        <input type="text" class="form-control" placeholder="Location" v-model="localLocation" :disabled="formDisabled" @keydown.enter="UpdateLocation">
       </div>
 
       <!-- Lights count input -->
       <div class="input-group mb-3">
         <span class="input-group-text">Lights count: {{numLights}}</span>
-        <input type="number" class="form-control" placeholder="Lights count" v-model="localNumLights" :disabled="currentID < 0" @keydown.enter="UpdateNumLights">
+        <input type="number" class="form-control" placeholder="Lights count" v-model="localNumLights" :disabled="formDisabled" @keydown.enter="UpdateNumLights">
       </div>
 
       <!-- Speed input -->
       <div class="input-group mb-3">
         <span class="input-group-text">Speed: {{speed}}</span>
-        <input type="number" class="form-control" placeholder="Speed" v-model="localSpeed" :disabled="currentID < 0" @keydown.enter="UpdateSpeed">
+        <input type="number" class="form-control" placeholder="Speed" v-model="localSpeed" :disabled="formDisabled" @keydown.enter="UpdateSpeed">
       </div>
 
-<!--      <colors-panel v-show="this.$store.state.currentArduinoID >= 0"></colors-panel>-->
-
+      <!-- Mirror index input -->
+      <div class="input-group mb-3">
+        <span class="input-group-text">Mirror index: {{mirrorIndex}}</span>
+        <input type="number" class="form-control" placeholder="Mirror index" v-model="localMirrorIndex" :disabled="formDisabled" @keydown.enter="UpdateMirrorIndex">
+      </div>
     </form>
   </div>
 </template>
 
 <script>
 
-import ColorsPanel from "./ColorsPanel";
-
 export default {
   name: "ArduinoProperties",
-  components: {
-    ColorsPanel
-  },
   data(){
     return{
       localSpeed: null,
@@ -74,7 +72,8 @@ export default {
       idInputValue: 0,
       idInputVisible: false,
       localLocation: "",
-      location: ""
+      localMirrorIndex: null
+      //location: ""
     }
   },
   computed: {
@@ -99,15 +98,11 @@ export default {
         this.$store.commit('changeCurrentArduinoID', {id: value})
       }
     },
-
-    // formDisabled: {
-    //   get: () => {
-    //     return this.$store.state.currentArduinoID < 0;
-    //   },
-    //   set: val => {
-    //     console.log("formDisabled cannot be changed to: " + val)
-    //   }
-    // },
+    formDisabled: {
+      get(){
+        return this.currentID < 0
+      }
+    },
 
     speed: {
       get(){
@@ -144,13 +139,19 @@ export default {
         this.$store.commit('changeEnabledOfCurrentArduinoID', {enabled: val})
       }
     },
+
+    mirrorIndex: {
+      get(){
+        return (this.formDisabled) ? null : this.$store.getters.getMirrorIndex
+      },
+      set(val) {
+        this.$store.commit('changeMirrorIndexOfCurrentArduinoID', {mirrorIndex: val})
+      }
+    }
   },
   methods: {
     IDChosen(event, id){
       this.currentID = id
-      console.log(this.$store.getters.getArduinoByID(this.currentID))
-      console.log("Arduino index: "+this.$store.getters.getArduinoIndex)
-
     },
     ToggleIdInputVisibility(){
       this.idInputVisible = !this.idInputVisible
@@ -158,6 +159,10 @@ export default {
     },
     UpdateID(){
       this.currentID = this.idInputValue
+      if(this.$store.getters.getArduinoByID() == undefined){
+        console.log("This id is free")
+        this.$store.commit('addArduino')
+      }
     },
     UpdateLocation(){
       this.location = this.localLocation
@@ -170,6 +175,10 @@ export default {
     UpdateSpeed(){
       this.speed = this.localSpeed
       this.localSpeed = null
+    },
+    UpdateMirrorIndex(){
+      this.mirrorIndex = this.localMirrorIndex
+      this.localMirrorIndex = null
     }
   }
 }

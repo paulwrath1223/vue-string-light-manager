@@ -2,12 +2,6 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    // colors: [
-    //   {color: "#FF0000", transitionFrames: 0},
-    //   {color: "#00FF00", transitionFrames: 1},
-    //   {color: "#0000FF", transitionFrames: 2},
-    //   {color: "#000000", transitionFrames: 3}
-    // ],
     currentArduinoID: -1,
     arduinoList: [
       {
@@ -17,7 +11,7 @@ export default createStore({
         lightsCount: 100,
         mirrorIndex: null,
         enabled: true,
-        updated: false,
+        // updated: false,
         colors: [
             {color: "#FF0000", transitionFrames: 0},
             {color: "#00FF00", transitionFrames: 1},
@@ -30,9 +24,9 @@ export default createStore({
         speed: 2,
         location: "Hand Rail",
         lightsCount: 50,
-        mirrorIndex: null,
+        mirrorIndex: 34,
         enabled: false,
-        updated: false,
+        // updated: false,
         colors: [
           {color: "#AF2345", transitionFrames: 8},
           {color: "#234A46", transitionFrames: 7},
@@ -64,14 +58,30 @@ export default createStore({
     getEnabledByArduinoID(state, getters){
       return state.arduinoList[getters.getArduinoIndex].enabled
     },
+    getMirrorIndex: (state, getters) => {
+      return state.arduinoList[getters.getArduinoIndex].mirrorIndex
+    },
     getColors: (state, getters) => {
       return state.arduinoList[getters.getArduinoIndex].colors
-    }
+    },
   },
 
   mutations: {
-
     //arduino properties
+    addArduino(state){
+      state.arduinoList.push({
+        arduinoID: this.currentArduinoID,
+        speed: null,
+        location: null,
+        lightsCount: null,
+        mirrorIndex: 0,
+        enabled: false,
+        // updated: false,
+        colors: [
+          {color: "#000000", transitionFrames: 0},
+        ]
+      })
+    },
     changeCurrentArduinoID(state, arduino){
       state.currentArduinoID = arduino.id
     },
@@ -90,6 +100,10 @@ export default createStore({
     changeEnabledOfCurrentArduinoID(state, arduino){
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
       state.arduinoList[index].enabled = arduino.enabled
+    },
+    changeMirrorIndexOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].mirrorIndex = arduino.mirrorIndex
     },
 
     //color node variables
