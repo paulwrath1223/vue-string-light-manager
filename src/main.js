@@ -74,6 +74,15 @@ function delay(delayInMs) {
     });
 }
 
+function getCurrentUserName()
+{
+    return((user.displayName).toString());
+}
+
+function getCurrentUserImage()
+{
+    return((user.photoURL).toString());
+}
 
 async function uploadArduino(id, json)
 {
@@ -118,58 +127,23 @@ async function verifyUser()
     {
         await signIn();
     }
-    console.log("user: " + user);
-}
-
-class Color
-{
-    constructor(redIn,greenIn,blueIn) {
-        this.r = redIn;
-        this.g = greenIn;
-        this.b = blueIn;
-    }
-
-}
-
-class ColorList
-{
-    constructor() {
-        this.colors = [];
-    }
-
-    addColor(ri, gi, bi)
-    {
-        let temp = new Color(ri, bi, gi);
-        this.colors.push(temp);
-    }
-
-    get colors()
-    {
-        return this.colors;
-    }
-
-}
-
-let exampleColor = new Color(69, 100, 100)
-
-
-function colorCompile()
-{
-
+    console.log("user: ");
+    console.log(user);
 }
 
 
-testing();
+
+
 
 createApp(App).use(store).mount('#app')
 
-async function testing()
+export async function testing()
 {
     console.log("uploadArduino:");
     console.log(await uploadArduino(0,
         {
             "Name" : "voj-ta sus icky",
-            "colorLength" : 44,
+            "colorLength" : 3,
             "colors" : [ {
                 "b" : 128,
                 "g" : 0,
@@ -190,7 +164,9 @@ async function testing()
             "update" : false
         }));
 
-    await downloadArduino(0)
+    await downloadArduino(0);
+    console.log("getCurrentUserName(): " + getCurrentUserName())
+    console.log("getCurrentUserImage(): " + getCurrentUserImage())
 }
 
 

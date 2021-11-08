@@ -1,6 +1,6 @@
 {
   "Name" : "lower balcony",
-  "colorLength" : 44,
+  "colorLength" : 3,
   "colors" : [ {
     "b" : 128,
     "g" : 0,
@@ -14,9 +14,9 @@
     "g" : 0,
     "r" : 255
   } ],
-  "mirrorIndex" : 19,
+  "mirrorIndex" : 69,
   "numLights" : 100,
   "speed" : 0.2,
   "state" : true,
-  "update" : false
+  "update" : true // ALWAYS TRUE
 }
