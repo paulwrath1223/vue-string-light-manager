@@ -111,12 +111,13 @@ export default createStore({
     },
     // deleteColorNode(state, colorNode){
     //   let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
-    //   state.arduinoList[index].colors.slice(colorNode.id, 1)
+    //   state.arduinoList[index].colors.splice(colorNode.id, 1)
     // }
     deleteColorNode: (state, colorNode) => {
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
       const i = state.arduinoList[index].colors.map(item => item.id).indexOf(colorNode.id)
       console.log("deleting item index: "+ colorNode.id)
+      console.log(state.arduinoList[index].colors[colorNode.id])
       state.arduinoList[index].colors.splice(colorNode.id, 1);
     }
   },

@@ -1,5 +1,5 @@
 <template>
-  <div class="card m-3" :style="{backgroundColor: localColor, color: inverse()}">
+  <div class="card m-3" :style="{backgroundColor: color, color: inverse()}">
 
     <div class="card-header" >
       color{{id}}: {{color}}
@@ -15,7 +15,7 @@
         </div>
         <!-- Color picker -->
         <div class="mt-2">
-            <input type="color" class="form-control-color small" v-model="localColor" @change=colorChanged>
+            <input type="color" class="form-control-color small" v-model="color" @change=colorChanged>
         </div>
 
       </form>
@@ -28,7 +28,7 @@ export default {
   name: "ColorNode",
   data(){
     return{
-      localColor: "#000000",
+      //localColor: "#000000",
       //color: "#000000",
       localTransitionFrames: null,
     }
@@ -40,6 +40,16 @@ export default {
   props:{
     id: Intl,
   },
+  // watch: {
+  //   color(newColor, oldColor){
+  //     try{
+  //       this.localColor = this.color
+  //     }catch{
+  //       console.log("local color not updated")
+  //     }
+  //
+  //   }
+  // },
   computed:{
     // currentID: {
     //   get() {
@@ -54,9 +64,9 @@ export default {
       get() {
         return this.$store.getters.getColors[this.id].color
       },
-      set(value) {
-        this.$store.commit('changeColorOfColorNode', {id: this.id, color: value})
-      }
+      // set(value) {
+      //   this.$store.commit('changeColorOfColorNode', {id: this.id, color: value})
+      // }
     },
 
     transitionFrames: {
@@ -74,7 +84,7 @@ export default {
       return  ((figure & 0x000000) | (~figure & 0xFFFFFF))
     },
     inverse(){
-      return "#" + this.inverse2(parseInt(this.localColor.substr(1), 16))
+      return "#" + this.inverse2(parseInt(this.color.substr(1), 16))
           .toString(16)
           .padStart(6, "0")
           .toUpperCase();
@@ -84,13 +94,15 @@ export default {
       this.transitionFrames = this.localTransitionFrames
     },
 
-    colorChanged(){
-      this.color = this.localColor
+    colorChanged(event){
+      // this.color = this.localColor
+      this.$store.commit('changeColorOfColorNode', {id: this.id, color: event.target.value})
     },
 
     deleteColorNode(){
       console.log("delted colorNode id: "+ this.id)
-      this.$store.commit('deleteColorNode', {id: this.id})
+      this.$emit('delete')
+      //this.$store.commit('deleteColorNode', {id: this.id})
       // console.log(this.$store.arduinoList[this.currentID])
     }
 

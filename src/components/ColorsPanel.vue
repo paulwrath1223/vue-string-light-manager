@@ -1,7 +1,12 @@
 <template>
   <div class="container p-5 my-5 border">
     <div class="colorNodes">
-      <color-node v-for="(node, i) in colorNodes" :id="i"></color-node>
+      <color-node
+          v-for="(node, i) in colorNodes"
+          :id="i"
+          v-on:delete="deleteColorNode(i)"
+      >
+      </color-node>
     </div>
     <button id="btn-add" class="btn btn-info" @click="addColorNode">+</button>
   </div>
@@ -44,6 +49,13 @@ export default {
       for(let i = 0; i < this.colorNodes.length; i++){
         console.log(`Id: ${i}, color: ${this.colorNodes[i].color}, transitionFrames: ${this.colorNodes[i].transitionFrames}`)
       }
+    },
+    updateColorsOfColorNodes(){
+
+    },
+    deleteColorNode(index){
+      console.log("successful emit, index: "+index)
+      this.$store.commit('deleteColorNode', {id: index})
     }
   }
 }
