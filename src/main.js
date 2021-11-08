@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap'
 
+
 import {createApp, getCurrentInstance} from 'vue'
 import App from './App.vue'
 import store from './store'
@@ -10,11 +11,6 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue } from "firebase/database";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import {colorNodesToRGBjson} from "@/colorCompiler&Dependencies";
-
-
-
-
-
 
 
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -57,14 +53,14 @@ async function signIn() {
         }).catch((error) => {
             console.log("sign in error!");
             console.log(error.code);
-        //     // Handle Errors here.
-        //     // const errorCode = error.code;
-        //     // const errorMessage = error.message;
-        //     // // The email of the user's account used.
-        //     // const email = error.email;
-        //     // // The AuthCredential type that was used.
-        //     // const credential = GoogleAuthProvider.credentialFromError(error);
-        //     // ...
+            //     // Handle Errors here.
+            //     // const errorCode = error.code;
+            //     // const errorMessage = error.message;
+            //     // // The email of the user's account used.
+            //     // const email = error.email;
+            //     // // The AuthCredential type that was used.
+            //     // const credential = GoogleAuthProvider.credentialFromError(error);
+            //     // ...
         });
 }
 
@@ -89,28 +85,39 @@ function getCurrentUserImage()
 
 async function uploadArduino(arduino)
 {
-
+    console.log("line 1");
     const id = arduino.currentID;
+    console.log("line 2");
     const json = arduinoToJson(arduino);
+    console.log("line 3");
     await verifyUser();
+    console.log("line 4");
     while(user === "[loading]")
     {
         await delay(10);
     }
-
+    console.log("line 5");
     const db = getDatabase(app);
+    console.log("line 6");
     return(set(ref(db, 'Arduino' + id + '/'), json));
 }
 
 async function downloadArduino(id)
 {
-          // speed: 0,
-          // numLights: 0,
-          // currentID: -1,
-          // idInputValue: 0,
-          // idInputVisible: false,
-          // location: ""
-
+    // speed: 0,
+    // numLights: 0,
+    // currentID: -1,
+    // idInputValue: 0,
+    // idInputVisible: false,
+    // location: ""
+    let arduinoOut = {
+        "speed": 0,
+        "numLights": 0,
+        "currentID": id,
+        "idInputValue": 0,
+        "idInputVisible": false,
+        "location": ""
+    };
 
     await verifyUser();
     while(user === "[loading]")
@@ -121,23 +128,27 @@ async function downloadArduino(id)
 
     const db = getDatabase(app);
 
-    const tempPath = ('Arduino' + id);
-    const nameRef = ref(db, tempPath);
-    onValue(nameRef, (snapshot) => {
-        const DBJSON = snapshot.toJSON();
-        const str = JSON.stringify(DBJSON, null, 2); // spacing level = 2
-        console.log("arduino: " + str);
-        const arduinoOut = {
-            "speed": DBJSON.speed,
-            "numLights": DBJSON.numLights,
-            "currentID": id,
-            "idInputValue": 0,
-            "idInputVisible": false,
-            "location": DBJSON.Name
-        };
-        return arduinoOut;
+    const speedPath = ('Arduino' + id + '/speed');
+    const speedRef = ref(db, speedPath);
+    onValue(speedRef, (snapshot) => {
+        const speedFromDB = snapshot.val();
+        arduinoOut.speed = speedFromDB;
+        console.log("speedFromDB: " + speedFromDB);
     });
-
+    const numLightsPath = ('Arduino' + id + '/numLights');
+    const numLightsRef = ref(db, numLightsPath);
+    onValue(numLightsRef, (snapshot) => {
+        const numLightsFromDB = snapshot.val();
+        arduinoOut.numLights = numLightsFromDB;
+        console.log("numLightsFromDB: " + numLightsFromDB);
+    });
+    const locationPath = ('Arduino' + id + '/Name');
+    const locationRef = ref(db, locationPath);
+    onValue(locationRef, (snapshot) => {
+        const locationFromDB = snapshot.val();
+        arduinoOut.location = locationFromDB;
+        console.log("locationFromDB: " + locationFromDB);
+    });
 
 
 }
@@ -152,37 +163,12 @@ async function verifyUser()
     console.log(user);
 }
 
-
-
-
-
-createApp(App).use(store).mount('#app')
-
 export async function testing()
 {
     console.log("uploadArduino:");
     console.log(await uploadArduino(0,
         {
-            "Name" : "voj-ta sus icky",
-            "colorLength" : 3,
-            "colors" : [ {
-                "b" : 128,
-                "g" : 0,
-                "r" : 255
-            }, {
-                "b" : 126,
-                "g" : 2,
-                "r" : 251
-            }, {
-                "b" : 128,
-                "g" : 0,
-                "r" : 255
-            } ],
-            "mirrorIndex" : 19,
-            "numLights" : 100,
-            "speed" : 0.2,
-            "state" : true,
-            "update" : false
+            //insert Vojta JSON Arduino format
         }));
 
     await downloadArduino(0);
@@ -205,9 +191,9 @@ function arduinoToJson(arduino)
     });
 }
 
-//       speed: 0,
-//       numLights: 0,
-//       currentID: -1,
-//       idInputValue: 0,
-//       idInputVisible: false,
-//       location: ""
+
+
+
+
+createApp(App).use(store).mount('#app')
+
