@@ -1,8 +1,8 @@
 <template>
-  <div class="card m-3" :style="{backgroundColor: color, color: inverse()}">
+  <div class="card m-3 " :style="{backgroundColor: color}">
 
     <div class="card-header" >
-      color{{id}}: {{color}}
+      <span class="input-group-text" style="max-width: 150px">Color{{id}}: {{color}} </span>
       <button class="btn btn-danger" id="btn-delete" @click=deleteColorNode>x</button>
     </div>
 

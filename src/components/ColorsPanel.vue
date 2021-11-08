@@ -8,7 +8,7 @@
       >
       </color-node>
     </div>
-    <button id="btn-add" class="btn btn-info" @click="addColorNode">+</button>
+    <button id="btn-add" class="btn btn-success" @click="addColorNode">+</button>
   </div>
 </template>
 

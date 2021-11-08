@@ -17,7 +17,8 @@
           <li class="dropdown-item" @click="ToggleIdInputVisibility" href="#">New id</li>
         </ul>
 
-        <div class="input-group mb-3" v-show="idInputVisible">
+        <!-- New id input -->
+        <div class="input-group my-3" v-show="idInputVisible">
           <span class="input-group-text">ID: {{currentID}}</span>
           <input type="number" class="form-control" placeholder="ID" v-model="idInputValue" @keydown.enter="UpdateID">
         </div>
@@ -26,13 +27,13 @@
       </div>
     </form>
 
-    <!-- Dropdown -->
-    <div class="form-check form-switch input-group switch" >
+    <!-- Enabled toggle switch -->
+    <div class="form-check form-switch mx-auto" style="width: 70px">
       <input class="form-check-input" type="checkbox" :disabled="currentID < 0" :checked="enabled">
-      <div class="">Turn on</div>
+      <label class="form-check-label mx-2" id="enabledSwitchLabel" >Enabled</label>
     </div>
 
-    <!-- Enabled switch -->
+    <!-- Location switch -->
     <form class="align-self-center custom-centered">
       <div class="input-group mb-3">
         <span class="input-group-text">Location: {{location}}</span>
