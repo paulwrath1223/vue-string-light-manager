@@ -83,7 +83,7 @@ export async function testing()
                 // updated: false,
                 colors: [
                 {color: "#FF0000", transitionFrames: 3},
-                {color: "#00FF00", transitionFrames: 3},
+                {color: "#00FF00", transitionFrames: 2},
                 {color: "#0000FF", transitionFrames: 2},
                 {color: "#000000", transitionFrames: 3}
             ]

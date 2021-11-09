@@ -16,7 +16,8 @@ function getBlue(colorObject)
     return(parseInt((hexColor[5]+hexColor[6]), 16))
 }
 
-export function colorCompile(arduinoIn)  // occasionally returns NaN, reproduce with colors[transframes:1,2,3,4]
+export function colorCompile(arduinoIn)  // occasionally returns NaN, reproduce with colors[transframes:1,2,3,4],
+// or any transition frame of 1
 {
     const colorsIn = arduinoIn.colors;
 
