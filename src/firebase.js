@@ -184,11 +184,10 @@ export async function downloadArduino(id)
         tempColor.color = JSONtoHex(currentNodeColor);
         console.log("tempColor: ");
         console.log(tempColor);
-        const finalNode = tempColor; //  WHY DOES COLOR NODES CONTAIN 4 INSTANCES OF THE LAST NODE?????
+        const finalNode = JSON.parse(JSON.stringify(tempColor));
         console.log("finalNode: ");
         console.log(finalNode);
-        colorNodes.push({"index": currentKeyFrameIndexIndex,
-            "node": finalNode}); // INDEX WORKS FINE !!!!!!!!!!!!!
+        colorNodes.push(finalNode);
     }
     console.log("colorNodes: ");
     console.log(colorNodes);
