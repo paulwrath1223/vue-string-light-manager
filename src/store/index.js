@@ -2,43 +2,138 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    colors: [
-      {color: "#FF0000", transitionFrames: 0},
-      {color: "#00FF00", transitionFrames: 1},
-      {color: "#0000FF", transitionFrames: 2},
-      {color: "#000000", transitionFrames: 3}
-    ],
+    currentArduinoID: -1,
     arduinoList: [
-      {arduinoID: "1358", speed: 0.7, on: false, updated: false},
-      {arduinoID: "2498", speed: 0.7, on: false, updated: false},
-      {arduinoID: "3225", speed: 0.7, on: false, updated: false},
-    ]
+      {
+        arduinoID: "1358",
+        speed: 0.7,
+        location: "Door Arch",
+        lightsCount: 100,
+        mirrorIndex: null,
+        enabled: true,
+        // updated: false,
+        colors: [
+            {color: "#FF0000", transitionFrames: 0},
+            {color: "#00FF00", transitionFrames: 1},
+            {color: "#0000FF", transitionFrames: 2},
+            {color: "#000000", transitionFrames: 3}
+        ]
+      },
+      {
+        arduinoID: "6532",
+        speed: 2,
+        location: "Hand Rail",
+        lightsCount: 50,
+        mirrorIndex: 34,
+        enabled: false,
+        // updated: false,
+        colors: [
+          {color: "#AF2345", transitionFrames: 8},
+          {color: "#234A46", transitionFrames: 7},
+          {color: "#11123F", transitionFrames: 6},
+          {color: "#23AB3E", transitionFrames: 5}
+        ]
+      },
+    ],
   },
+
   getters: {
-    arduinoIds(state){
-      let ids = []
-      for(let i = 0; i < state.arduinoList.length; i++){
-        ids.push(state.arduinoList[i].arduinoID)
-      }
-      return ids
-    }
+    getArduinoByID: (state) => (id) =>{
+      return state.arduinoList.find(arduino => arduino.arduinoID === id)
+    },
+    getArduinoIndex: (state, getters) => {
+      return state.arduinoList.indexOf(getters.getArduinoByID(state.currentArduinoID))
+      //return state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID).speed
+      //return getters.getArduinoByID.speed
+    },
+    getSpeedByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].speed
+    },
+    getLightsCountByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].lightsCount
+    },
+    getLocationByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].location
+    },
+    getEnabledByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].enabled
+    },
+    getMirrorIndex: (state, getters) => {
+      return state.arduinoList[getters.getArduinoIndex].mirrorIndex
+    },
+    getColors: (state, getters) => {
+      return state.arduinoList[getters.getArduinoIndex].colors
+    },
   },
+
   mutations: {
+    //arduino properties
+    addArduino(state){
+      state.arduinoList.push({
+        arduinoID: this.currentArduinoID,
+        speed: null,
+        location: null,
+        lightsCount: null,
+        mirrorIndex: 0,
+        enabled: false,
+        // updated: false,
+        colors: [
+          {color: "#000000", transitionFrames: 0},
+        ]
+      })
+    },
+    changeCurrentArduinoID(state, arduino){
+      state.currentArduinoID = arduino.id
+    },
+    changeSpeedOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].speed = arduino.speed
+    },
+    changeLocationOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].location = arduino.location
+    },
+    changeLightsCountOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].lightsCount = arduino.lightsCount
+    },
+    changeEnabledOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].enabled = arduino.enabled
+    },
+    changeMirrorIndexOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].mirrorIndex = arduino.mirrorIndex
+    },
+
+    //color node variables
     addColor(state){
-      state.colors.push({id: state.colors.length, color: "#000000", transitionFrames: 0})
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors.push(
+          {
+            color: "#000000",
+            transitionFrames: 0
+          })
     },
     changeColorOfColorNode(state, colorNode){
-      state.colors[colorNode.id].color = colorNode.color
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors[colorNode.id].color = colorNode.color
     },
     changeTransitionFramesOfColorNode(state, colorNode){
-      state.colors[colorNode.id].transitionFrames = colorNode.transitionFrames
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors[colorNode.id].transitionFrames = colorNode.transitionFrames
     },
-    deleteColorNode(){
-
+    // deleteColorNode(state, colorNode){
+    //   let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+    //   state.arduinoList[index].colors.splice(colorNode.id, 1)
+    // }
+    deleteColorNode: (state, colorNode) => {
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
+      state.arduinoList[index].colors.splice(colorNode.id, 1);
     }
-
   },
   actions: {
+
   },
   modules: {
   }
