@@ -1,52 +1,25 @@
-import {forEach} from "core-js/internals/array-iteration";
-
-
 function getRed(colorObject)
 {
     const hexColor = colorObject.color;
     return(parseInt((hexColor[1]+hexColor[2]), 16))
 }
+
 function getGreen(colorObject)
 {
     const hexColor = colorObject.color;
     return(parseInt((hexColor[3]+hexColor[4]), 16))
 }
+
 function getBlue(colorObject)
 {
     const hexColor = colorObject.color;
     return(parseInt((hexColor[5]+hexColor[6]), 16))
 }
-function buildHex(r, g, b)
+
+export function colorCompile(arduinoIn)  // COMPLETELY FUCKING BROKEN
 {
-    return(("#" + Number(r).toString(16) + Number(g).toString(16) + Number(b).toString(16)).toUpperCase());
-}
+    const colorsIn = arduinoIn.colors;
 
-
-
-function hexListToRGBJSON(hexList)
-{
-    let RGBjson = [];
-    for(const hex of hexList)
-    {
-        RGBjson.push(hexColorToJson(hex));
-    }
-    return(RGBjson);
-}
-
-function hexColorToJson(hexString)
-{
-    return({
-        "r": getRed(hexString),
-        "g": getGreen(hexString),
-        "b": getBlue(hexString)
-    });
-}
-
-
-
-function colorCompile(arduinoIn)
-{
-    let colorsIn = arduinoIn.colors;
     let colorsOut = [];
     let CurrentColor; //string (hex color)
     let NextColor; //string (hex color)
@@ -80,15 +53,12 @@ function colorCompile(arduinoIn)
     }
     for(let index3 = 0; index3 < rs.length; index3++)
     {
-        colorsOut.push(buildHex(rs[index3], gs[index3], bs[index3]));
+        colorsOut.push({
+            "r": Math.round(rs[index3]),
+            "g": Math.round(gs[index3]),
+            "b": Math.round(bs[index3])});
     }
     console.log("colorsOut: ");
     console.log(colorsOut);
     return colorsOut;
-}
-
-export function colorNodesToRGBjson(arduinoIn)
-{
-    let hexList = colorCompile(arduinoIn);
-    return(hexListToRGBJSON(hexList));
 }
