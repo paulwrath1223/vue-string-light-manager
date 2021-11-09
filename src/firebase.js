@@ -29,10 +29,10 @@ function arduinoToJson(arduinoNotJSON)
         "Name": arduinoNotJSON.location,
         "colorLength": colorJSON.length,
         "colors": colorJSON,
-        "mirrorIndex" : arduinoNotJSON.mirrorIndex, // doesnt exist yet in this branch
-        "numLights" : arduinoNotJSON.numLights,
+        "mirrorIndex" : arduinoNotJSON.mirrorIndex,
+        "numLights" : arduinoNotJSON.lightsCount,
         "speed" : arduinoNotJSON.speed,
-        "state" : arduinoNotJSON.state, // doesnt exist yet in this branch
+        "state" : arduinoNotJSON.enabled,
         "update" : true // ALWAYS TRUE
     });
 
@@ -59,7 +59,7 @@ export function getCurrentUserImage()
     return((globalUser.photoURL).toString());
 }
 
-export async function uploadArduino(arduino)
+export async function uploadArduino(arduino) //WRITE KEYFRAMEINDICES DUMBASS
 {
 
     await verifyUser();
@@ -73,6 +73,11 @@ export async function uploadArduino(arduino)
     console.log(json);
     const db = getDatabase(app);
     return(set(ref(db, 'Arduinos/' + id + '/'), json));
+
+}
+
+function JSONtoHex(currentNodeColor) {
+    return "#000000";
 }
 
 export async function downloadArduino(id)
@@ -84,16 +89,18 @@ export async function downloadArduino(id)
     // idInputVisible: false,
     // location: ""
     let arduinoOut = {
-        "speed": 0,
-        "numLights": 0,
-        "currentID": id,
-        "mirrorIndex" : 0,
-        "idInputValue": 0,
-        "state": true,
-        "idInputVisible": false,
-        "location": "Test from website",
-        "colors":[]
-
+        arduinoID: (id.toString()),
+        speed: 0,
+        location: "",
+        lightsCount: 0,
+        mirrorIndex: 0,
+        enabled: true,
+        colors: [
+            {color: "#FF0000", transitionFrames: 1},
+            {color: "#00FF00", transitionFrames: 2},
+            {color: "#0000FF", transitionFrames: 3},
+            {color: "#000000", transitionFrames: 4}
+        ]
     };
 
     await verifyUser();
@@ -104,11 +111,42 @@ export async function downloadArduino(id)
 
 
     arduinoOut.speed = await getAttribute(id, "speed");
-
     arduinoOut.numLights = await getAttribute(id, "numLights");
-
     arduinoOut.location = await getAttribute(id, "Name");
+    let rawColors = await getAttribute(id, "colors");
+    let keyFrameIndices = await getAttribute(id, "keyFrameIndices");
+    let colorNodes = {
+        "colors":
+            [
 
+            ]
+
+    };
+    const templateColor = {
+        "color": "#000000",
+        "transitionFrames": 1
+    };
+    let tempColor = templateColor;
+    // let currentNodeNumFrames = 0;
+    let currentNodeColor = {
+        "r": 0,
+        "g": 0,
+        "b": 0
+    };
+    for(
+        let currentKeyFrameIndexIndex = 0;
+        currentKeyFrameIndexIndex < keyFrameIndices.length;
+        currentKeyFrameIndexIndex++
+    )
+    {
+        const nextIndex = keyFrameIndices[(currentKeyFrameIndexIndex + 1) % keyFrameIndices.length]
+        currentNodeColor = rawColors[keyFrameIndices[currentKeyFrameIndexIndex]];
+        tempColor.transitionFrames = keyFrameIndices[currentKeyFrameIndexIndex] - nextIndex;
+        tempColor = templateColor;
+        tempColor.color = JSONtoHex(currentNodeColor);
+        colorNodes.colors.push(tempColor);
+    }
+    arduinoOut.colors = colorNodes.colors; // restructure vard
     return arduinoOut;
 
 }

@@ -74,25 +74,19 @@ export async function testing()
     console.log("uploadArduino start:");
     const uploadResults = await uploadArduino(
         {
-            "speed": 0.69,
-            "numLights": 500,
-            "currentID": 10,
-            "mirrorIndex" : 69,
-            "idInputValue": 0,
-            "state": true,
-            "idInputVisible": false,
-            "location": "Test from website",
-            "colors":[
-                {
-                    "color": "#00ff00",
-                    "transitionFrames":10
-                },
-                {
-                    "color": "#ff0000",
-                    "transitionFrames":10
-                }
+                arduinoID: "10",
+                speed: 0,
+                location: "web test with updated vard",
+                lightsCount: 100,
+                mirrorIndex: 50,
+                enabled: true,
+                // updated: false,
+                colors: [
+                {color: "#FF0000", transitionFrames: 3},
+                {color: "#00FF00", transitionFrames: 3},
+                {color: "#0000FF", transitionFrames: 2},
+                {color: "#000000", transitionFrames: 3}
             ]
-
         });
     console.log("uploadResults: ");
     console.log(uploadResults);
