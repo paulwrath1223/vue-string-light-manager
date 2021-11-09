@@ -1,7 +1,8 @@
-import {colorCompile} from "@/colorCompiler&Dependencies";
-
+import {colorCompile, JSONtoHex} from "@/colorCompiler&Dependencies";
 import {getDatabase, onValue, ref, set} from "firebase/database";
-import {app, globalUser, signIn} from "@/main.js";
+import {app, auth, globalUser, signIn, uid} from "@/main.js";
+import {onAuthStateChanged} from "firebase/auth";
+
 
 // {
 //         arduinoID: "1358",
@@ -66,12 +67,22 @@ function delay(delayInMs)
 
 export function getCurrentUserName()
 {
-    return((globalUser.displayName).toString());
+    try{
+        return (globalUser.displayName).toString();
+    } catch(error)
+    {
+        return null;
+    }
 }
 
 export function getCurrentUserImage()
 {
-    return((globalUser.photoURL).toString());
+    try{
+        return (globalUser.photoURL).toString();
+    } catch(error)
+    {
+        return null;
+    }
 }
 
 export async function uploadArduino(arduino) //WRITE KEYFRAMEINDICES DUMBASS
@@ -88,28 +99,9 @@ export async function uploadArduino(arduino) //WRITE KEYFRAMEINDICES DUMBASS
     console.log("JSON to upload to id " + id + ": ");
     console.log(json);
     const db = getDatabase(app);
-    return(set(ref(db, 'Arduinos/' + id + '/'), json));
+    return(set(ref(db, "users/" + uid + '/Arduinos/' + id + '/'), json));
 
 }
-
-
-function componentToHex(c) {
-    const hex = Number(c).toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-function JSONtoHex(currentNodeColor) {
-    console.log("JSONtoHex: ");
-    console.log(currentNodeColor);
-
-    const r = currentNodeColor.r;
-    const g = currentNodeColor.g;
-    const b = currentNodeColor.b;
-    const result = ("#" + componentToHex(r) + componentToHex(g) + componentToHex(b));
-    console.log(result);
-    return result;
-}
-
 
 export async function downloadArduino(id)
 {
@@ -141,13 +133,13 @@ export async function downloadArduino(id)
     }
 
     console.log("flag 2");
-    arduinoOut.speed = await getAttribute(id, "speed");
-    arduinoOut.numLights = await getAttribute(id, "numLights");
-    arduinoOut.location = await getAttribute(id, "Name");
+    arduinoOut.speed = await getAttribute("/" + id + "/speed");
+    arduinoOut.numLights = await getAttribute("/" + id + "/numLights");
+    arduinoOut.location = await getAttribute("/" + id + "/Name");
     console.log("flag 3");
-    let rawColors = await getAttribute(id, "colors");
+    let rawColors = await getAttribute("/" + id + "/colors");
     console.log("getting keyframe indices: ");
-    let keyFrameIndices = await getAttribute(id, "keyFrameIndices"); //NOT ACTUALLY WAITING
+    let keyFrameIndices = await getAttribute("/" + id + "/keyFrameIndices");
     console.log(keyFrameIndices);
     let colorNodes = [];
     console.log("flag 4");
@@ -196,6 +188,7 @@ export async function downloadArduino(id)
 
 }
 
+
 async function verifyUser()
 {
     if(globalUser == null)
@@ -206,15 +199,16 @@ async function verifyUser()
     console.log(globalUser);
 }
 
-async function getAttribute(id, attribute) {
+async function getAttribute(path) {
+    await verifyUser();
     const db = getDatabase(app);
     let tempResult = undefined;
-    const tempPath = ('Arduinos/' + id + '/' + attribute);
+    const tempPath = ("users/" + uid + '/Arduinos' + path);
     const tempRef = ref(db, tempPath);
-    console.log("get id " + id + "'s " + attribute);
+    console.log("get " + path);
     onValue(tempRef, (snapshot) => {
         tempResult = snapshot.val();
-        console.log("get id " + id + "'s " + attribute + ": " + tempResult);
+        console.log("get " + path + ": " + tempResult);
 
     });
     while(tempResult === undefined)

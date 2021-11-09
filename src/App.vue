@@ -1,16 +1,25 @@
 <template>
+
   <img alt="Vue logo" src="./assets/logo.png">
-  <button name="test" @click="test">test</button>
+
+
+<!--  <button name="testing" @click="test">test</button>-->
+  <account-management></account-management>
   <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
   <arduino-properties></arduino-properties>
   <colors-panel v-show="this.$store.state.currentArduinoID >= 0"></colors-panel>
 </template>
 
 <script>
+require("./main");
 import HelloWorld from './components/HelloWorld.vue'
 import ColorsPanel from "./components/ColorsPanel";
 import ArduinoProperties from "./components/ArduinoProperties";
-import {testing} from "./main.js";
+import accountManagement from "./components/accountManagement";
+import {signIn, testing, userName} from "./main.js";
+import {getCurrentUserName} from "./firebase.js"
+
+export let userNameLocal = getCurrentUserName();
 
 export default {
   name: 'App',
@@ -18,12 +27,21 @@ export default {
     HelloWorld,
     ColorsPanel,
     ArduinoProperties,
+    accountManagement
   },
   methods: {
+    signI() {
+      signIn()
+    },
     test() {
       testing()
     }
   },
+  msg: function() {
+    return{userName};
+  },
+
+
   computed: {
     colorPanelVisible: {
       get: () => {

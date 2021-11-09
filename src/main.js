@@ -9,9 +9,9 @@ import store from './store'
 
 import { initializeApp } from 'firebase/app';
 
-import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import {getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged} from "firebase/auth";
 
-import {downloadArduino, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
+import {downloadArduino, getCurrentUserImage, getCurrentUserName, getNumIds, uploadArduino} from "@/firebase";
 
 
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -35,6 +35,9 @@ export const app = initializeApp(firebaseConfig);
 export const provider = new GoogleAuthProvider();
 export const auth = getAuth();
 export let globalUser = null;
+export let uid = null;
+export let userImageUrl = null;
+export let userName = null;
 
 export async function signIn()
 {
@@ -50,6 +53,10 @@ export async function signIn()
             // The signed-in user info.
             // const user = result.user;
             globalUser = result.user;
+            userImageUrl = getCurrentUserImage();
+            userName = getCurrentUserName();
+
+            uid = globalUser.uid;
 
             // ...
         }).catch((error) => {
@@ -69,6 +76,7 @@ export async function signIn()
 
 }
 
+
 export async function testing()
 {
     console.log("uploadArduino start:");
@@ -84,7 +92,7 @@ export async function testing()
                 colors: [
                 {color: "#FF0000", transitionFrames: 3},
                 {color: "#00FF00", transitionFrames: 2},
-                {color: "#0000FF", transitionFrames: 2},
+                {color: "#0000FF", transitionFrames: 1},
                 {color: "#000000", transitionFrames: 3}
             ]
         });
@@ -92,12 +100,10 @@ export async function testing()
     console.log(uploadResults);
 
     console.log(await downloadArduino(10));
-    console.log("getCurrentUserName(): " + getCurrentUserName())
-    console.log("getCurrentUserImage(): " + getCurrentUserImage())
+    console.log("getCurrentUserName(): " + getCurrentUserName());
+    console.log("getCurrentUserImage(): " + getCurrentUserImage());
+
 }
-
-
-
 
 
 createApp(App).use(store).mount('#app')
