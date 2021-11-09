@@ -3,6 +3,23 @@ import {colorCompile} from "@/colorCompiler&Dependencies";
 import {getDatabase, onValue, ref, set} from "firebase/database";
 import {app, globalUser, signIn} from "@/main.js";
 
+// {
+//         arduinoID: "1358",
+//         speed: 0.7,
+//         location: "Door Arch",
+//         lightsCount: 100,
+//         mirrorIndex: null,
+//         enabled: true,
+//         // updated: false,
+//         colors: [
+//             {color: "#FF0000", transitionFrames: 0},
+//             {color: "#00FF00", transitionFrames: 1},
+//             {color: "#0000FF", transitionFrames: 2},
+//             {color: "#000000", transitionFrames: 3}
+//         ]
+// }
+
+
 
 function arduinoToJson(arduinoNotJSON)
 {
