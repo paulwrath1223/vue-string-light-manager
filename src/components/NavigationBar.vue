@@ -27,7 +27,9 @@
           <img :src="userImage"
                class="rounded-circle"
                height="40"
-               width="40">
+               width="40"
+               alt = "profile picture"
+          >
           Bean Time
         </div>
       </div>

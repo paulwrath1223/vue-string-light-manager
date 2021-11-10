@@ -1,7 +1,6 @@
 import {colorCompile, JSONtoHex} from "@/colorCompiler&Dependencies";
 import {getDatabase, onValue, ref, set, remove, off} from "firebase/database";
-import {app, auth, globalUser, provider, uid, userImageUrl, userName} from "@/main.js";
-import {browserLocalPersistence, GoogleAuthProvider, setPersistence, signInWithPopup} from "firebase/auth";
+import {app, auth, globalUser, uid} from "@/main.js";
 
 
 
@@ -270,7 +269,7 @@ function removeItemAll(arr, value) {
     console.log(arr);
     let newArr = [];
     for(let i = 0;i < arr.length; i++) {
-        if (arr[i] != value) { // DO NOT REPLACE WITH "!=="
+        if ((arr[i]) !== (value).toString()) { // DO NOT REPLACE WITH "!=="
             newArr.push(arr[i]);
         }
     }

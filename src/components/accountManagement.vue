@@ -43,10 +43,10 @@ export default {
     updateLocalUserName()
     {
       this.localUserName = getCurrentUserName();
-    },
-    updateLocalUserImageUrl()
-    {
-      this.localUserImageUrl = getCurrentUserImage();
+    // },
+    // updateLocalUserImageUrl()
+    // {
+    //   this.localUserImageUrl = getCurrentUserImage();
     }
   }
 }

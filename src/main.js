@@ -11,7 +11,7 @@ import { initializeApp } from 'firebase/app';
 
 import {getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence} from "firebase/auth";
 
-import {deleteArduino, downloadAllArds, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
+import {downloadAllArds, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
 
 
 // https://firebase.google.com/docs/web/setup#available-libraries
