@@ -14,23 +14,23 @@
             <a class="nav-link" href="#">Turn On/Off</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" :class="{disabled: !userLoggedIn}" href="#">Upload</a>
+            <a class="nav-link" :class="{disabled: !user.loggedIn}" href="#">Upload</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" :class="{disabled: !userLoggedIn}" href="#">Download</a>
+            <a class="nav-link" :class="{disabled: !user.loggedIn}" href="#">Download</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link"  @click="signInOut" href="#">{{logInPromote}}</a>
+            <a class="nav-link"  @click="sign" href="#">{{logInPromote}}</a>
           </li>
         </ul>
-        <div class="container-fluid me-0" style="width: 150px" v-show="userLoggedIn">
-          <img :src="userImage"
+        <div class="container-fluid me-0" style="width: 150px" v-show="user.loggedIn">
+          <img :src="user.image"
                class="rounded-circle"
                height="40"
                width="40"
                alt = "profile picture"
           >
-          Bean Time
+          {{ user.name }}
         </div>
       </div>
     </div>
@@ -40,7 +40,8 @@
 
 <script>
 
-import {userImageUrl} from "@/main";
+import {signIn} from "@/main";
+import {getCurrentUserImage, getCurrentUserName} from "@/firebase";
 
 
 export default {
@@ -48,9 +49,9 @@ export default {
   data(){
     return {
       user : {
-        loggedIn: true,
-        name: "Bean Time",
-        image: "https://lh3.googleusercontent.com/a/AATXAJyUh3h7YPBWTC9nqNgqzkp2o4h6mQWg27w2gF86=s96-c"
+        loggedIn: (getCurrentUserName() != null),
+        name: getCurrentUserName(),
+        image: getCurrentUserImage()
       },
     }
   },
@@ -64,27 +65,26 @@ export default {
     //     console.log("User changed") //todo
     //   }
     // },
-    userImage() {
-      return (this.userLoggedIn) ? userImageUrl : null
-    },
     userLoggedIn(){
-      return this.user.loggedIn
+      console.log("getCurrentUserName() != null: " + (getCurrentUserName() != null));
+      return (getCurrentUserName() != null)
     },
     logInPromote(){
-      return (this.userLoggedIn) ? "Sign out" : "Log in"
-    },
+      return (this.user.loggedIn) ? "Change account" : "Log in"
+    }
   },
   methods: {
-    signInOut(){
-      if(this.userLoggedIn) {
-        this.$store.commit("userSignOut")
-      }
-      else{
-        console.log("Logged in")
-      }
+    async sign() {
+      console.log("sign in button");
+      await signIn();
+
+      this.user.name = getCurrentUserName();
+      this.user.image = getCurrentUserImage();
+      this.user.loggedIn = (getCurrentUserName() != null)
+      console.log("new user name: " + (this.user.name));
+      console.log("this.userLoggedIn: " + (this.user.loggedIn));
     }
   }
-
 }
 </script>
 

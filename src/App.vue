@@ -3,7 +3,7 @@
 
 
   <button name="testing" @click="test">test</button>
-  <account-management></account-management>
+<!--  <account-management></account-management>-->
   <navigation-bar></navigation-bar>
 <!--  <nav class="navbar navbar-expand-lg navbar-light bg-light">-->
 <!--    <div class="container-fluid">-->
