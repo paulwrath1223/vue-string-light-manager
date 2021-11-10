@@ -1,40 +1,16 @@
 import { createStore } from 'vuex'
+import {downloadAllArds, getCurrentUserImage, getCurrentUserName} from "@/firebase";
+
 
 export default createStore({
   state: {
+    user : {
+      loggedIn: (getCurrentUserName() != null),
+      name: getCurrentUserName(),
+      image: getCurrentUserImage()
+    },
     currentArduinoID: -1,
-    arduinoList: [
-      {
-        arduinoID: "1358",
-        speed: 0.7,
-        location: "Door Arch",
-        lightsCount: 100,
-        mirrorIndex: null,
-        enabled: true,
-        // updated: false,
-        colors: [
-            {color: "#FF0000", transitionFrames: 0},
-            {color: "#00FF00", transitionFrames: 1},
-            {color: "#0000FF", transitionFrames: 2},
-            {color: "#000000", transitionFrames: 3}
-        ]
-      },
-      {
-        arduinoID: "6532",
-        speed: 2,
-        location: "Hand Rail",
-        lightsCount: 50,
-        mirrorIndex: 34,
-        enabled: false,
-        // updated: false,
-        colors: [
-          {color: "#AF2345", transitionFrames: 8},
-          {color: "#234A46", transitionFrames: 7},
-          {color: "#11123F", transitionFrames: 6},
-          {color: "#23AB3E", transitionFrames: 5}
-        ]
-      },
-    ],
+    arduinoList: []
   },
 
   getters: {
@@ -67,6 +43,7 @@ export default createStore({
   },
 
   mutations: {
+    //navbar properties
     //arduino properties
     addArduino(state){
       state.arduinoList.push({
@@ -81,6 +58,12 @@ export default createStore({
           {color: "#000000", transitionFrames: 0},
         ]
       })
+    },
+    changeDatabase(state, vArdList)
+    {
+      state.arduinoList = vArdList;
+      console.log("vArdList: ");
+      console.log(state.arduinoList);
     },
     changeCurrentArduinoID(state, arduino){
       state.currentArduinoID = arduino.id

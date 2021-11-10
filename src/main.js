@@ -38,6 +38,7 @@ export let globalUser = null;
 export let uid = null;
 export let userImageUrl = null;
 export let userName = null;
+export let vArdList = null;
 
 
 export async function signIn()
@@ -97,7 +98,7 @@ export async function testing()
     console.log("uploadArduino start:");
     const uploadResults = await uploadArduino(
         {
-                arduinoID: "10",
+                arduinoID: "12",
                 speed: 0,
                 location: "web test with updated vard",
                 lightsCount: 100,

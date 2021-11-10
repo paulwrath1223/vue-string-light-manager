@@ -20,6 +20,7 @@ export default {
       localUserImageUrl: getCurrentUserImage()
     }
   },
+
   // computed: {
   //   localUserName: {
   //     get(){
@@ -42,10 +43,10 @@ export default {
     updateLocalUserName()
     {
       this.localUserName = getCurrentUserName();
-    },
-    updateLocalUserImageUrl()
-    {
-      this.localUserImageUrl = getCurrentUserImage();
+    // },
+    // updateLocalUserImageUrl()
+    // {
+    //   this.localUserImageUrl = getCurrentUserImage();
     }
   }
 }

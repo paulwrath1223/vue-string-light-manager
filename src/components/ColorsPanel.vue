@@ -38,10 +38,6 @@ export default {
         console.log("colors cannot be changed to: " + value)
       }
     },
-
-    // colorNodesCount(){
-    //   return this.colorNodes.length
-    // }
   },
   methods: {
     addColorNode(){
@@ -49,9 +45,6 @@ export default {
       for(let i = 0; i < this.colorNodes.length; i++){
         console.log(`Id: ${i}, color: ${this.colorNodes[i].color}, transitionFrames: ${this.colorNodes[i].transitionFrames}`)
       }
-    },
-    updateColorsOfColorNodes(){
-
     },
     deleteColorNode(index){
       console.log("successful emit, index: "+index)

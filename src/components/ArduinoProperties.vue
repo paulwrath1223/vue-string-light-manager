@@ -3,6 +3,7 @@
     <form class="align-self-center custom-centered">
       <!-- Dropdown -->
       <div class="dropdown">
+        <button name="deleteArdButton" @click="localDeleteArduino(currentID)">delete ID</button>
         <button
             class="btn btn-primary dropdown-toggle"
             type="button"
@@ -14,6 +15,7 @@
           <li><h5 class="dropdown-header">Choose id from database</h5></li>
           <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen($event, id); this.idInputVisible=false">{{id}}</a></li>
           <li><h5 class="dropdown-header">Create a new id</h5></li>
+<!--          @click="newArd"-->
           <li class="dropdown-item" @click="ToggleIdInputVisibility" href="#">New id</li>
         </ul>
 
@@ -63,6 +65,8 @@
 
 <script>
 
+import {deleteArduino, getExistingIds} from "@/firebase";
+
 export default {
   name: "ArduinoProperties",
   data(){
@@ -78,12 +82,16 @@ export default {
   },
   computed: {
     arduinoIDs: {
-      get(){
-        let ids = []
+      get() {
+        let ids = [];
         for(let i = 0; i < this.$store.state.arduinoList.length; i++){
-          ids.push(this.$store.state.arduinoList[i].arduinoID)
+          ids.push(this.$store.state.arduinoList[i].arduinoID);
         }
-        return ids
+        console.log("ids list");
+        console.log(ids);
+
+        // return await getExistingIds();
+        return ids;
       },
       set(value){
         console.log("arduinoIdsList cannot be edited to: "+value)
@@ -150,6 +158,16 @@ export default {
     }
   },
   methods: {
+    newArd()
+    {
+
+    },
+    async localDeleteArduino(id)
+    {
+      console.log("function: localDeleteArduino\nID: " + id);
+      await deleteArduino(id);
+      this.currentID = null;
+    },
     IDChosen(event, id){
       this.currentID = id
     },
@@ -159,10 +177,13 @@ export default {
     },
     UpdateID(){
       this.currentID = this.idInputValue
-      if(this.$store.getters.getArduinoByID() == undefined){
-        console.log("This id is free")
-        this.$store.commit('addArduino')
+      console.log("function: UpdateID\nNew ID: ");
+      console.log(this.currentID);
+      if(this.$store.getters.getArduinoByID(this.currentID) == undefined){
+        console.log("This id is free");
+        this.$store.commit('addArduino');
       }
+      console.log("This id exists");
     },
     UpdateLocation(){
       this.location = this.localLocation
