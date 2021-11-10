@@ -9,9 +9,9 @@ import store from './store'
 
 import { initializeApp } from 'firebase/app';
 
-import {getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged} from "firebase/auth";
+import {getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence} from "firebase/auth";
 
-import {downloadArduino, getCurrentUserImage, getCurrentUserName, getNumIds, uploadArduino} from "@/firebase";
+import {downloadArduino, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
 
 
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -39,40 +39,53 @@ export let uid = null;
 export let userImageUrl = null;
 export let userName = null;
 
+
 export async function signIn()
 {
-    // user = null;
-    console.log("sign in function begin");
+    return setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+            // user = null;
+            console.log("sign in function begin");
 
-    globalUser = null;
-    return signInWithPopup(auth, provider)
-        .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            // const credential = GoogleAuthProvider.credentialFromResult(result);
-            // const token = credential.accessToken;
-            // The signed-in user info.
-            // const user = result.user;
-            globalUser = result.user;
-            userImageUrl = getCurrentUserImage();
-            userName = getCurrentUserName();
+            globalUser = null;
+            return signInWithPopup(auth, provider)
+                .then((result) => {
+                    // This gives you a Google Access Token. You can use it to access the Google API.
+                    // const credential = GoogleAuthProvider.credentialFromResult(result);
+                    // const token = credential.accessToken;
+                    // The signed-in user info.
+                    // const user = result.user;
+                    globalUser = result.user;
+                    userImageUrl = getCurrentUserImage();
+                    userName = getCurrentUserName();
 
-            uid = globalUser.uid;
+                    uid = globalUser.uid;
 
-            // ...
-        }).catch((error) => {
-            console.log("sign in error!");
-            console.log("error code: " + error.code);
-            //     // Handle Errors here.
-            console.log("error Message: " + error.message);
-            //     // const errorMessage = error.message;
-            //     // // The email of the user's account used.
-            console.log("The email of the user's account used: " + error.email);
-            //     // const email = error.email;
-            console.log("The AuthCredential type that was used: " + GoogleAuthProvider.credentialFromError(error));
-            //     // // The AuthCredential type that was used.
-            //     // const credential = GoogleAuthProvider.credentialFromError(error);
-            //     // ...
+                    // ...
+                }).catch((error) => {
+                    console.log("sign in error!");
+                    console.log("error code: " + error.code);
+                    //     // Handle Errors here.
+                    console.log("error Message: " + error.message);
+                    //     // const errorMessage = error.message;
+                    //     // // The email of the user's account used.
+                    console.log("The email of the user's account used: " + error.email);
+                    //     // const email = error.email;
+                    console.log("The AuthCredential type that was used: " + GoogleAuthProvider.credentialFromError(error));
+                    //     // // The AuthCredential type that was used.
+                    //     // const credential = GoogleAuthProvider.credentialFromError(error);
+                    //     // ...
+                });
+
+
+        })
+        .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
         });
+
+
 
 }
 
