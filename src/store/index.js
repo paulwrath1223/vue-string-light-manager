@@ -2,6 +2,11 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
+    user : {
+      loggedIn: true,
+      name: "Bean Time",
+      image: "https://lh3.googleusercontent.com/a/AATXAJyUh3h7YPBWTC9nqNgqzkp2o4h6mQWg27w2gF86=s96-c"
+    },
     currentArduinoID: -1,
     arduinoList: [
       {
@@ -67,6 +72,14 @@ export default createStore({
   },
 
   mutations: {
+    //navbar properties
+    userSignOut(state){
+      state.user = {
+        loggedIn: false,
+        name: null,
+        image: null
+      }
+    },
     //arduino properties
     addArduino(state){
       state.arduinoList.push({
