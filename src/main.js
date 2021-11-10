@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap'
 
 
-import {createApp, getCurrentInstance} from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import store from './store'
 
@@ -11,7 +11,7 @@ import { initializeApp } from 'firebase/app';
 
 import {getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence} from "firebase/auth";
 
-import {downloadArduino, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
+import {downloadAllArds, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
 
 
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -81,8 +81,10 @@ export async function signIn()
         })
         .catch((error) => {
             // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
+            console.log("sign in persist error!");
+            console.log("error code: " + error.code);
+            //     // Handle Errors here.
+            console.log("error Message: " + error.message);
         });
 
 
@@ -112,7 +114,7 @@ export async function testing()
     console.log("uploadResults: ");
     console.log(uploadResults);
 
-    console.log(await downloadArduino(10));
+    console.log(await downloadAllArds());
     console.log("getCurrentUserName(): " + getCurrentUserName());
     console.log("getCurrentUserImage(): " + getCurrentUserImage());
 
