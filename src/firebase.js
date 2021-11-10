@@ -1,7 +1,7 @@
 import {colorCompile, JSONtoHex} from "@/colorCompiler&Dependencies";
-import {getDatabase, onValue, ref, set} from "firebase/database";
-import {app, auth, globalUser, signIn, uid} from "@/main.js";
-import {onAuthStateChanged} from "firebase/auth";
+import {getDatabase, onValue, ref, set, remove, off} from "firebase/database";
+import {app, auth, globalUser, uid} from "@/main.js";
+
 
 
 // {
@@ -85,8 +85,9 @@ export function getCurrentUserImage()
     }
 }
 
-export async function uploadArduino(arduino) //WRITE KEYFRAMEINDICES DUMBASS
+export async function uploadArduino(arduino)
 {
+
 
 
     await verifyUser();
@@ -94,11 +95,37 @@ export async function uploadArduino(arduino) //WRITE KEYFRAMEINDICES DUMBASS
     {
         await delay(10);
     }
+    const db = getDatabase(app);
     const id = arduino.arduinoID;
+    console.log("uploading id " + id);
+    let displayName = await getAttribute("/displayName")
+
+
+    console.log("displayName: ");
+    console.log(displayName);
+    if(displayName == null)
+    {
+        console.log("Case: first-time upload ");
+        console.log(await set(ref(db, "users/" + uid + "/usedIds"), [id]));
+        console.log("usedIds from db: ");
+        console.log(await getAttribute("/usedIds"));
+
+    }
+    else
+    {
+        let idList = await getAttribute("/usedIds");
+        if(!(idList.includes(id)))
+        {
+            console.log("Case: idList != null, does not contain id ");
+            idList.push(id);
+            await set(ref(db, "users/" + uid + "/usedIds"), idList);
+        }
+    }
     const json = arduinoToJson(arduino);
     console.log("JSON to upload to id " + id + ": ");
     console.log(json);
-    const db = getDatabase(app);
+    await set(ref(db, "users/" + uid + "/displayName"), await getCurrentUserName());
+    await set(ref(db, "users/" + uid + "/email"), auth.currentUser.email);
     return(set(ref(db, "users/" + uid + '/Arduinos/' + id + '/'), json));
 
 }
@@ -133,13 +160,13 @@ export async function downloadArduino(id)
     }
 
     console.log("flag 2");
-    arduinoOut.speed = await getAttribute("/" + id + "/speed");
-    arduinoOut.numLights = await getAttribute("/" + id + "/numLights");
-    arduinoOut.location = await getAttribute("/" + id + "/Name");
+    arduinoOut.speed = await getAttribute("/Arduinos/" + id + "/speed");
+    arduinoOut.numLights = await getAttribute("/Arduinos/" + id + "/numLights");
+    arduinoOut.location = await getAttribute("/Arduinos/" + id + "/Name");
     console.log("flag 3");
-    let rawColors = await getAttribute("/" + id + "/colors");
+    let rawColors = await getAttribute("/Arduinos/" + id + "/colors");
     console.log("getting keyframe indices: ");
-    let keyFrameIndices = await getAttribute("/" + id + "/keyFrameIndices");
+    let keyFrameIndices = await getAttribute("/Arduinos/" + id + "/keyFrameIndices");
     console.log(keyFrameIndices);
     let colorNodes = [];
     console.log("flag 4");
@@ -193,27 +220,55 @@ async function verifyUser()
 {
     if(globalUser == null)
     {
-        await signIn();
+        alert("you must be signed in to do that");
     }
-    console.log("user: ");
-    console.log(globalUser);
+
 }
 
 async function getAttribute(path) {
     await verifyUser();
     const db = getDatabase(app);
     let tempResult = undefined;
-    const tempPath = ("users/" + uid + '/Arduinos' + path);
+    const tempPath = ("users/" + uid + path);
     const tempRef = ref(db, tempPath);
-    console.log("get " + path);
     onValue(tempRef, (snapshot) => {
         tempResult = snapshot.val();
-        console.log("get " + path + ": " + tempResult);
-
+        console.log("get " + tempPath + ": " + tempResult);
     });
     while(tempResult === undefined)
     {
         await delay(10);
     }
+    off(tempRef);
     return tempResult;
+}
+
+export async function downloadAllArds()
+{
+    console.log("function: download all arduinos");
+    const idList = await getAttribute("/usedIds");
+    let vardList = [];
+    let currentVard;
+    for(let id of idList)
+    {
+        try {
+            currentVard = await downloadArduino(id);
+        } catch {
+            currentVard = undefined;
+        }
+        const vard = JSON.parse(JSON.stringify(currentVard));
+        console.log("final vard: ");
+        console.log(vard);
+        vardList.push(vard);
+    }
+    return vardList;
+}
+
+export async function deleteArduino(id)
+{
+    await verifyUser();
+    const db = getDatabase(app);
+    const tempPath = ("users/" + uid + "/Arduinos/" + id);
+    const tempRef = ref(db, tempPath);
+    return await remove(tempRef);
 }

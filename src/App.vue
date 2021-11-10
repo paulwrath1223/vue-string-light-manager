@@ -3,7 +3,7 @@
   <img alt="Vue logo" src="./assets/logo.png">
 
 
-<!--  <button name="testing" @click="test">test</button>-->
+  <button name="testing" @click="test">test</button>
   <account-management></account-management>
   <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
   <arduino-properties></arduino-properties>
@@ -16,10 +16,9 @@ import HelloWorld from './components/HelloWorld.vue'
 import ColorsPanel from "./components/ColorsPanel";
 import ArduinoProperties from "./components/ArduinoProperties";
 import accountManagement from "./components/accountManagement";
-import {signIn, testing, userName} from "./main.js";
-import {getCurrentUserName} from "./firebase.js"
+import {testing, userName} from "./main.js";
 
-export let userNameLocal = getCurrentUserName();
+
 
 export default {
   name: 'App',
@@ -30,9 +29,6 @@ export default {
     accountManagement
   },
   methods: {
-    signI() {
-      signIn()
-    },
     test() {
       testing()
     }
