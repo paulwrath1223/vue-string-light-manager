@@ -3,6 +3,7 @@
     <form class="align-self-center custom-centered">
       <!-- Dropdown -->
       <div class="dropdown">
+        <button name="deleteArdButton" @click="localDeleteArduino(currentID)">delete ID</button>
         <button
             class="btn btn-primary dropdown-toggle"
             type="button"
@@ -63,6 +64,8 @@
 
 <script>
 
+import {deleteArduino, getExistingIds} from "@/firebase";
+
 export default {
   name: "ArduinoProperties",
   data(){
@@ -78,12 +81,13 @@ export default {
   },
   computed: {
     arduinoIDs: {
-      get(){
-        let ids = []
+      async get() {
+        let ids = [];
         for(let i = 0; i < this.$store.state.arduinoList.length; i++){
-          ids.push(this.$store.state.arduinoList[i].arduinoID)
+          ids.push(this.$store.state.arduinoList[i].arduinoID);
         }
-        return ids
+        // return await getExistingIds();
+        return ids;
       },
       set(value){
         console.log("arduinoIdsList cannot be edited to: "+value)
@@ -150,6 +154,11 @@ export default {
     }
   },
   methods: {
+    async localDeleteArduino(id)
+    {
+      await deleteArduino(id);
+      this.currentID = null;
+    },
     IDChosen(event, id){
       this.currentID = id
     },

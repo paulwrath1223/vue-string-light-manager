@@ -1,6 +1,7 @@
 import {colorCompile, JSONtoHex} from "@/colorCompiler&Dependencies";
 import {getDatabase, onValue, ref, set, remove, off} from "firebase/database";
-import {app, auth, globalUser, uid} from "@/main.js";
+import {app, auth, globalUser, provider, uid, userImageUrl, userName} from "@/main.js";
+import {browserLocalPersistence, GoogleAuthProvider, setPersistence, signInWithPopup} from "firebase/auth";
 
 
 
@@ -264,11 +265,34 @@ export async function downloadAllArds()
     return vardList;
 }
 
+function removeItemAll(arr, value) {
+    console.log("function: removeItemAll\nRemoving " + value + "from:");
+    console.log(arr);
+    let newArr = [];
+    for(let i = 0;i < arr.length; i++) {
+        if (arr[i] != value) { // DO NOT REPLACE WITH "!=="
+            newArr.push(arr[i]);
+        }
+    }
+    console.log("function: removeItemAll\nRemoved " + value + "from:");
+    console.log(newArr);
+    return newArr;
+}
+
+
 export async function deleteArduino(id)
 {
     await verifyUser();
     const db = getDatabase(app);
     const tempPath = ("users/" + uid + "/Arduinos/" + id);
     const tempRef = ref(db, tempPath);
+    let idList = await getAttribute("/usedIds");
+    const newIdList = removeItemAll(idList, id);
+    await set(ref(db, "users/" + uid + "/usedIds"), newIdList);
     return await remove(tempRef);
+}
+
+export async function getExistingIds()
+{
+    return await getAttribute("/usedIds");
 }

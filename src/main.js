@@ -11,7 +11,7 @@ import { initializeApp } from 'firebase/app';
 
 import {getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence} from "firebase/auth";
 
-import {downloadAllArds, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
+import {deleteArduino, downloadAllArds, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
 
 
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -97,7 +97,7 @@ export async function testing()
     console.log("uploadArduino start:");
     const uploadResults = await uploadArduino(
         {
-                arduinoID: "10",
+                arduinoID: "12",
                 speed: 0,
                 location: "web test with updated vard",
                 lightsCount: 100,

@@ -20,6 +20,7 @@ export default {
       localUserImageUrl: getCurrentUserImage()
     }
   },
+
   // computed: {
   //   localUserName: {
   //     get(){

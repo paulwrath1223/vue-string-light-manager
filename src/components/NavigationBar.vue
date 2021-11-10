@@ -37,6 +37,10 @@
 </template>
 
 <script>
+
+import {userImageUrl} from "@/main";
+
+
 export default {
   name: "NavigationBar",
   data(){
@@ -59,7 +63,7 @@ export default {
     //   }
     // },
     userImage() {
-      return (this.userLoggedIn) ? this.user.image : null
+      return (this.userLoggedIn) ? userImageUrl : null
     },
     userLoggedIn(){
       return this.user.loggedIn
