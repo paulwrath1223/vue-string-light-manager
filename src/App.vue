@@ -1,6 +1,10 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
 
+
+<!--  <button name="testing" @click="test">test</button>-->
+  <account-management></account-management>
+
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,10 +47,15 @@
 </template>
 
 <script>
+require("./main");
 import HelloWorld from './components/HelloWorld.vue'
 import ColorsPanel from "./components/ColorsPanel";
 import ArduinoProperties from "./components/ArduinoProperties";
-import {testing} from "./main.js";
+import accountManagement from "./components/accountManagement";
+import {signIn, testing, userName} from "./main.js";
+import {getCurrentUserName} from "./firebase.js"
+
+export let userNameLocal = getCurrentUserName();
 
 export default {
   name: 'App',
@@ -54,12 +63,21 @@ export default {
     HelloWorld,
     ColorsPanel,
     ArduinoProperties,
+    accountManagement
   },
   methods: {
+    signI() {
+      signIn()
+    },
     test() {
       testing()
     }
   },
+  msg: function() {
+    return{userName};
+  },
+
+
   computed: {
     colorPanelVisible() {
       return this.$store.state.currentArduinoID >= 0;

@@ -9,7 +9,7 @@ import store from './store'
 
 import { initializeApp } from 'firebase/app';
 
-import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import {getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence} from "firebase/auth";
 
 import {downloadArduino, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
 
@@ -35,39 +35,60 @@ export const app = initializeApp(firebaseConfig);
 export const provider = new GoogleAuthProvider();
 export const auth = getAuth();
 export let globalUser = null;
+export let uid = null;
+export let userImageUrl = null;
+export let userName = null;
+
 
 export async function signIn()
 {
-    // user = null;
-    console.log("sign in function begin");
+    return setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+            // user = null;
+            console.log("sign in function begin");
 
-    globalUser = null;
-    return signInWithPopup(auth, provider)
-        .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            // const credential = GoogleAuthProvider.credentialFromResult(result);
-            // const token = credential.accessToken;
-            // The signed-in user info.
-            // const user = result.user;
-            globalUser = result.user;
+            globalUser = null;
+            return signInWithPopup(auth, provider)
+                .then((result) => {
+                    // This gives you a Google Access Token. You can use it to access the Google API.
+                    // const credential = GoogleAuthProvider.credentialFromResult(result);
+                    // const token = credential.accessToken;
+                    // The signed-in user info.
+                    // const user = result.user;
+                    globalUser = result.user;
+                    userImageUrl = getCurrentUserImage();
+                    userName = getCurrentUserName();
 
-            // ...
-        }).catch((error) => {
-            console.log("sign in error!");
-            console.log("error code: " + error.code);
-            //     // Handle Errors here.
-            console.log("error Message: " + error.message);
-            //     // const errorMessage = error.message;
-            //     // // The email of the user's account used.
-            console.log("The email of the user's account used: " + error.email);
-            //     // const email = error.email;
-            console.log("The AuthCredential type that was used: " + GoogleAuthProvider.credentialFromError(error));
-            //     // // The AuthCredential type that was used.
-            //     // const credential = GoogleAuthProvider.credentialFromError(error);
-            //     // ...
+                    uid = globalUser.uid;
+
+                    // ...
+                }).catch((error) => {
+                    console.log("sign in error!");
+                    console.log("error code: " + error.code);
+                    //     // Handle Errors here.
+                    console.log("error Message: " + error.message);
+                    //     // const errorMessage = error.message;
+                    //     // // The email of the user's account used.
+                    console.log("The email of the user's account used: " + error.email);
+                    //     // const email = error.email;
+                    console.log("The AuthCredential type that was used: " + GoogleAuthProvider.credentialFromError(error));
+                    //     // // The AuthCredential type that was used.
+                    //     // const credential = GoogleAuthProvider.credentialFromError(error);
+                    //     // ...
+                });
+
+
+        })
+        .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
         });
 
+
+
 }
+
 
 export async function testing()
 {
@@ -84,7 +105,7 @@ export async function testing()
                 colors: [
                 {color: "#FF0000", transitionFrames: 3},
                 {color: "#00FF00", transitionFrames: 2},
-                {color: "#0000FF", transitionFrames: 2},
+                {color: "#0000FF", transitionFrames: 1},
                 {color: "#000000", transitionFrames: 3}
             ]
         });
@@ -92,12 +113,10 @@ export async function testing()
     console.log(uploadResults);
 
     console.log(await downloadArduino(10));
-    console.log("getCurrentUserName(): " + getCurrentUserName())
-    console.log("getCurrentUserImage(): " + getCurrentUserImage())
+    console.log("getCurrentUserName(): " + getCurrentUserName());
+    console.log("getCurrentUserImage(): " + getCurrentUserImage());
+
 }
-
-
-
 
 
 createApp(App).use(store).mount('#app')

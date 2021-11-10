@@ -42,9 +42,9 @@ export function colorCompile(arduinoIn)  // occasionally returns NaN, reproduce 
         }
         CurrentColor = colorsIn[index];
         let CurrentTransitionFrames = CurrentColor.transitionFrames
-        dr = (getRed(NextColor) - getRed(CurrentColor)) / (CurrentTransitionFrames - 1);
-        dg = (getGreen(NextColor) - getGreen(CurrentColor)) / (CurrentTransitionFrames - 1);
-        db = (getBlue(NextColor) - getBlue(CurrentColor)) / (CurrentTransitionFrames - 1);
+        dr = (getRed(NextColor) - getRed(CurrentColor)) / (CurrentTransitionFrames);
+        dg = (getGreen(NextColor) - getGreen(CurrentColor)) / (CurrentTransitionFrames);
+        db = (getBlue(NextColor) - getBlue(CurrentColor)) / (CurrentTransitionFrames);
         for (let index2 = 0; index2 < CurrentTransitionFrames; index2++)
         {
             rs.push(getRed(CurrentColor) + (index2 * dr));
@@ -63,3 +63,21 @@ export function colorCompile(arduinoIn)  // occasionally returns NaN, reproduce 
     console.log(colorsOut);
     return colorsOut;
 }
+
+function componentToHex(c) {
+    const hex = Number(c).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+}
+
+export function JSONtoHex(currentNodeColor) {
+    console.log("JSONtoHex: ");
+    console.log(currentNodeColor);
+
+    const r = currentNodeColor.r;
+    const g = currentNodeColor.g;
+    const b = currentNodeColor.b;
+    const result = ("#" + componentToHex(r) + componentToHex(g) + componentToHex(b));
+    console.log(result);
+    return result;
+}
+
