@@ -38,6 +38,7 @@ export let globalUser = null;
 export let uid = null;
 export let userImageUrl = null;
 export let userName = null;
+export let vArdList = null;
 
 
 export async function signIn()

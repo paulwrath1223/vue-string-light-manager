@@ -81,11 +81,14 @@ export default {
   },
   computed: {
     arduinoIDs: {
-      async get() {
+      get() {
         let ids = [];
         for(let i = 0; i < this.$store.state.arduinoList.length; i++){
           ids.push(this.$store.state.arduinoList[i].arduinoID);
         }
+        console.log("ids list");
+        console.log(ids);
+
         // return await getExistingIds();
         return ids;
       },

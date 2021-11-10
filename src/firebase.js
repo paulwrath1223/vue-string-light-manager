@@ -245,6 +245,7 @@ async function getAttribute(path) {
 
 export async function downloadAllArds()
 {
+    await verifyUser();
     console.log("function: download all arduinos");
     const idList = await getAttribute("/usedIds");
     let vardList = [];

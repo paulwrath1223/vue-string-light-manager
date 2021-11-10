@@ -17,20 +17,21 @@
             <a class="nav-link" :class="{disabled: !user.loggedIn}" href="#">Upload</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" :class="{disabled: !user.loggedIn}" href="#">Download</a>
+            <a class="nav-link"  @click="reloadArds" :class="{disabled: !user.loggedIn}" href="#">Download</a>
           </li>
           <li class="nav-item">
             <a class="nav-link"  @click="sign" href="#">{{logInPromote}}</a>
           </li>
         </ul>
         <div class="container-fluid me-0" style="width: 150px" v-show="user.loggedIn">
+          {{ user.name }}
           <img :src="user.image"
                class="rounded-circle"
                height="40"
                width="40"
                alt = "profile picture"
           >
-          {{ user.name }}
+
         </div>
       </div>
     </div>
@@ -40,8 +41,8 @@
 
 <script>
 
-import {signIn} from "@/main";
-import {getCurrentUserImage, getCurrentUserName} from "@/firebase";
+import {signIn, vArdList} from "@/main";
+import {downloadAllArds, getCurrentUserImage, getCurrentUserName} from "@/firebase";
 
 
 export default {
@@ -74,6 +75,10 @@ export default {
     }
   },
   methods: {
+    async reloadArds()
+    {
+      this.$store.commit('changeDatabase', await downloadAllArds());
+    },
     async sign() {
       console.log("sign in button");
       await signIn();
@@ -83,6 +88,7 @@ export default {
       this.user.loggedIn = (getCurrentUserName() != null)
       console.log("new user name: " + (this.user.name));
       console.log("this.userLoggedIn: " + (this.user.loggedIn));
+      this.$store.commit('changeDatabase', await downloadAllArds());
     }
   }
 }
