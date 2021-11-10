@@ -292,7 +292,4 @@ export async function deleteArduino(id)
     return await remove(tempRef);
 }
 
-export async function getExistingIds()
-{
-    return await getAttribute("/usedIds");
-}
+
