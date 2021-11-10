@@ -39,20 +39,30 @@
 <script>
 export default {
   name: "NavigationBar",
-  computed: {
-    user: {
-      get(){
-        return this.$store.state.user
+  data(){
+    return {
+      user : {
+        loggedIn: true,
+        name: "Bean Time",
+        image: "https://lh3.googleusercontent.com/a/AATXAJyUh3h7YPBWTC9nqNgqzkp2o4h6mQWg27w2gF86=s96-c"
       },
-      set(){
-        console.log("User changed") //todo
-      }
-    },
+    }
+  },
+  computed: {
+    // user: {
+    //   get(){
+    //     console.log(this.$store.state.user)
+    //     return this.$store.state.user
+    //   },
+    //   set(){
+    //     console.log("User changed") //todo
+    //   }
+    // },
     userImage() {
       return (this.userLoggedIn) ? this.user.image : null
     },
     userLoggedIn(){
-      return (this.userLoggedIn) ? this.user.loggedIn : null
+      return this.user.loggedIn
     },
     logInPromote(){
       return (this.userLoggedIn) ? "Sign out" : "Log in"
@@ -66,9 +76,9 @@ export default {
       else{
         console.log("Logged in")
       }
-      }
     }
   }
+
 }
 </script>
 
