@@ -272,3 +272,8 @@ export async function deleteArduino(id)
     const tempRef = ref(db, tempPath);
     return await remove(tempRef);
 }
+
+export async function getIds()
+{
+    return(await getAttribute("/usedIds"));
+}

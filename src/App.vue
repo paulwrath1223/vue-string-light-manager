@@ -69,9 +69,7 @@ export default {
       testing()
     }
   },
-  msg: function() {
-    return{userName};
-  },
+
 
 
   computed: {
