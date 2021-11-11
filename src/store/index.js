@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import {downloadAllArds, getCurrentUserImage, getCurrentUserName} from "@/firebase";
+import {getCurrentUserImage, getCurrentUserName} from "@/firebase";
 
 
 export default createStore({
@@ -45,9 +45,9 @@ export default createStore({
   mutations: {
     //navbar properties
     //arduino properties
-    addArduino(state){
+    addArduino(state, id){
       state.arduinoList.push({
-        arduinoID: this.currentArduinoID,
+        arduinoID: id,
         speed: null,
         location: null,
         lightsCount: null,

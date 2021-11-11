@@ -7,20 +7,23 @@
       <div class="collapse navbar-collapse" id="navbarToggler01">
         <a class="navbar-brand" href="#">String Light Manager</a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Arduino</a>
+<!--          <li class="nav-item" v-show="user.loggedIn">-->
+<!--            <a class="nav-link active" aria-current="page" href="#">Arduino</a>-->
+<!--          </li>-->
+<!--          <li class="nav-item" v-show="user.loggedIn">-->
+<!--            <a class="nav-link" href="#">Turn On/Off</a>-->
+<!--          </li>-->
+          <li class="nav-item" v-show="user.loggedIn">
+            <a class="nav-link"  @click="uploadArduino" :class="{disabled: !user.loggedIn}" href="#">Upload</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Turn On/Off</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" :class="{disabled: !user.loggedIn}" href="#">Upload</a>
-          </li>
-          <li class="nav-item">
+          <li class="nav-item" v-show="user.loggedIn">
             <a class="nav-link"  @click="reloadArds" :class="{disabled: !user.loggedIn}" href="#">Download</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link"  @click="sign" href="#">{{logInPromote}}</a>
+          <li class="nav-item" v-show="user.loggedIn">
+            <a class="nav-link"  @click="deleteArduino" :class="{disabled: !user.loggedIn}" href="#">Delete</a>
+          </li>
+          <li class="nav-item" v-show="!user.loggedIn">
+            <a class="nav-link"  @click="sign" href="#">sign in</a>
           </li>
         </ul>
         <div class="container-fluid me-0" style="width: 150px" v-show="user.loggedIn">
@@ -36,17 +39,22 @@
       </div>
     </div>
   </nav>
+  <ArduinoProperties ref="arduinoProperties" />
 
 </template>
 
 <script>
 
-import {signIn, vArdList} from "@/main";
+import {signIn} from "@/main";
 import {downloadAllArds, getCurrentUserImage, getCurrentUserName} from "@/firebase";
+import ArduinoProperties from "@/components/ArduinoProperties";
 
 
 export default {
   name: "NavigationBar",
+  components: {
+    ArduinoProperties,
+  },
   data(){
     return {
       user : {
@@ -70,11 +78,16 @@ export default {
       console.log("getCurrentUserName() != null: " + (getCurrentUserName() != null));
       return (getCurrentUserName() != null)
     },
-    logInPromote(){
-      return (this.user.loggedIn) ? "Change account" : "Log in"
-    }
+    // logInPromote(){
+    //   return (this.user.loggedIn) ? "Change account" : "Log in"
+    // }
   },
   methods: {
+    async deleteArduino()
+    {
+      await this.$refs.arduinoProperties.localDeleteArduino();
+      await this.reloadArds();
+    },
     async reloadArds()
     {
       this.$store.commit('changeDatabase', await downloadAllArds());
@@ -89,6 +102,10 @@ export default {
       console.log("new user name: " + (this.user.name));
       console.log("this.userLoggedIn: " + (this.user.loggedIn));
       this.$store.commit('changeDatabase', await downloadAllArds());
+    },
+    async uploadArduino()
+    {
+      await this.$refs.arduinoProperties.uploadArduinoFromAP();
     }
   }
 }

@@ -11,7 +11,7 @@ import { initializeApp } from 'firebase/app';
 
 import {getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence} from "firebase/auth";
 
-import {downloadAllArds, getCurrentUserImage, getCurrentUserName, uploadArduino} from "@/firebase";
+import {getCurrentUserImage, getCurrentUserName} from "@/firebase";
 
 
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -38,7 +38,7 @@ export let globalUser = null;
 export let uid = null;
 export let userImageUrl = null;
 export let userName = null;
-export let vArdList = null;
+
 
 
 export async function signIn()
@@ -93,33 +93,33 @@ export async function signIn()
 }
 
 
-export async function testing()
-{
-    console.log("uploadArduino start:");
-    const uploadResults = await uploadArduino(
-        {
-                arduinoID: "12",
-                speed: 0,
-                location: "web test with updated vard",
-                lightsCount: 100,
-                mirrorIndex: 50,
-                enabled: true,
-                // updated: false,
-                colors: [
-                {color: "#FF0000", transitionFrames: 3},
-                {color: "#00FF00", transitionFrames: 2},
-                {color: "#0000FF", transitionFrames: 1},
-                {color: "#000000", transitionFrames: 3}
-            ]
-        });
-    console.log("uploadResults: ");
-    console.log(uploadResults);
-
-    console.log(await downloadAllArds());
-    console.log("getCurrentUserName(): " + getCurrentUserName());
-    console.log("getCurrentUserImage(): " + getCurrentUserImage());
-
-}
+// export async function testing()
+// {
+//     console.log("uploadArduino start:");
+//     const uploadResults = await uploadArduino(
+//         {
+//                 arduinoID: "12",
+//                 speed: 0,
+//                 location: "web test with updated vard",
+//                 lightsCount: 100,
+//                 mirrorIndex: 50,
+//                 enabled: true,
+//                 // updated: false,
+//                 colors: [
+//                 {color: "#FF0000", transitionFrames: 3},
+//                 {color: "#00FF00", transitionFrames: 2},
+//                 {color: "#0000FF", transitionFrames: 1},
+//                 {color: "#000000", transitionFrames: 3}
+//             ]
+//         });
+//     console.log("uploadResults: ");
+//     console.log(uploadResults);
+//
+//     console.log(await downloadAllArds());
+//     console.log("getCurrentUserName(): " + getCurrentUserName());
+//     console.log("getCurrentUserImage(): " + getCurrentUserImage());
+//
+// }
 
 
 createApp(App).use(store).mount('#app')

@@ -114,17 +114,21 @@ export async function uploadArduino(arduino)
     else
     {
         let idList = await getAttribute("/usedIds");
+        if(idList == null)
+        {
+            idList = [];
+        }
         if(!(idList.includes(id)))
         {
             console.log("Case: idList != null, does not contain id ");
-            idList.push(id);
+            idList.push(Number(id));
             await set(ref(db, "users/" + uid + "/usedIds"), idList);
         }
     }
     const json = arduinoToJson(arduino);
     console.log("JSON to upload to id " + id + ": ");
     console.log(json);
-    await set(ref(db, "users/" + uid + "/displayName"), await getCurrentUserName());
+    await set(ref(db, "users/" + uid + "/displayName"), getCurrentUserName());
     await set(ref(db, "users/" + uid + "/email"), auth.currentUser.email);
     return(set(ref(db, "users/" + uid + '/Arduinos/' + id + '/'), json));
 
@@ -139,7 +143,7 @@ export async function downloadArduino(id)
     // idInputVisible: false,
     // location: ""
     let arduinoOut = {
-        arduinoID: (id.toString()),
+        arduinoID: id,
         speed: 0,
         location: "",
         lightsCount: 0,
@@ -201,8 +205,6 @@ export async function downloadArduino(id)
         tempColor = templateColor;
         tempColor.transitionFrames = nextIndex - keyFrameIndices[currentKeyFrameIndexIndex];
         tempColor.color = JSONtoHex(currentNodeColor);
-        console.log("tempColor: ");
-        console.log(tempColor);
         const finalNode = JSON.parse(JSON.stringify(tempColor));
         console.log("finalNode: ");
         console.log(finalNode);
@@ -247,20 +249,26 @@ export async function downloadAllArds()
 {
     await verifyUser();
     console.log("function: download all arduinos");
-    const idList = await getAttribute("/usedIds");
+    let idList = await getAttribute("/usedIds");
+    if(idList === null)
+    {
+        console.log("idList is empty, probably first-time user");
+        idList = [];
+    }
     let vardList = [];
     let currentVard;
-    for(let id of idList)
-    {
-        try {
-            currentVard = await downloadArduino(id);
-        } catch {
-            currentVard = undefined;
+    if(idList) {
+        for (let id of idList) {
+            try {
+                currentVard = await downloadArduino(id);
+            } catch {
+                currentVard = undefined;
+            }
+            const vard = JSON.parse(JSON.stringify(currentVard));
+            console.log("final vard: ");
+            console.log(vard);
+            vardList.push(vard);
         }
-        const vard = JSON.parse(JSON.stringify(currentVard));
-        console.log("final vard: ");
-        console.log(vard);
-        vardList.push(vard);
     }
     return vardList;
 }
@@ -270,7 +278,7 @@ function removeItemAll(arr, value) {
     console.log(arr);
     let newArr = [];
     for(let i = 0;i < arr.length; i++) {
-        if ((arr[i]) !== (value).toString()) { // DO NOT REPLACE WITH "!=="
+        if ((arr[i]) != (value)) { // DO NOT REPLACE WITH "!=="
             newArr.push(arr[i]);
         }
     }
@@ -292,4 +300,8 @@ export async function deleteArduino(id)
     return await remove(tempRef);
 }
 
+export function getExistingIds()
+{
+    return(getAttribute("/usedIds"));
+}
 

@@ -1,9 +1,10 @@
 <template>
   <div class="arduinoProperties mt-0 align-items-center">
     <form class="align-self-center custom-centered">
+<!--      <button name="deleteArdButton" @click="localDeleteArduino(currentID)">delete ID</button>-->
       <!-- Dropdown -->
       <div class="dropdown">
-        <button name="deleteArdButton" @click="localDeleteArduino(currentID)">delete ID</button>
+
         <button
             class="btn btn-primary dropdown-toggle"
             type="button"
@@ -31,7 +32,7 @@
 
     <!-- Enabled toggle switch -->
     <div class="form-check form-switch mx-auto" style="width: 70px">
-      <input class="form-check-input" type="checkbox" :disabled="formDisabled" :checked="enabled">
+      <input class="form-check-input" type="checkbox" @click="switchToggled" :disabled="formDisabled" :checked="enabled">
       <label class="form-check-label mx-2" id="enabledSwitchLabel" >Enabled</label>
     </div>
 
@@ -65,7 +66,8 @@
 
 <script>
 
-import {deleteArduino, getExistingIds} from "@/firebase";
+
+import {getExistingIds, deleteArduino, downloadAllArds, uploadArduino} from "@/firebase";
 
 export default {
   name: "ArduinoProperties",
@@ -84,13 +86,21 @@ export default {
     arduinoIDs: {
       get() {
         let ids = [];
-        for(let i = 0; i < this.$store.state.arduinoList.length; i++){
-          ids.push(this.$store.state.arduinoList[i].arduinoID);
+        for (let i = 0; i < this.$store.state.arduinoList.length; i++) {
+          console.log("new length of idlist:");
+          console.log(ids.push(this.$store.state.arduinoList[i].arduinoID));
         }
+
+        // const intIds = await getExistingIds();
+        // for(let id of intIds)
+        // {
+        //   ids.push(id.toString());
+        // }
         console.log("ids list");
         console.log(ids);
+        console.log("arduino list: ");
+        console.log(this.$store.state.arduinoList);
 
-        // return await getExistingIds();
         return ids;
       },
       set(value){
@@ -158,15 +168,28 @@ export default {
     }
   },
   methods: {
-    newArd()
+    switchToggled()
     {
+      this.enabled = !this.enabled;
+      console.log("switch toggled to " + this.enabled)
+    },
+    async localDeleteArduino()
+    {
+      const IDToDelete = this.currentID;
+      console.log("function: localDeleteArduino\nID: " + IDToDelete);
+      await deleteArduino(IDToDelete);
+      this.currentID = null;
+      alert("Arduino ID " + IDToDelete + " has been deleted");
+      await downloadAllArds();
 
     },
-    async localDeleteArduino(id)
+    async uploadArduinoFromAP()
     {
-      console.log("function: localDeleteArduino\nID: " + id);
-      await deleteArduino(id);
-      this.currentID = null;
+      const IDToUpload = this.currentID;
+      const vArdToUpload = this.$store.getters.getArduinoByID(IDToUpload);
+      console.log("uploading id " + IDToUpload + ":");
+      console.log(vArdToUpload);
+      await uploadArduino(vArdToUpload);
     },
     IDChosen(event, id){
       this.currentID = id
@@ -181,7 +204,7 @@ export default {
       console.log(this.currentID);
       if(this.$store.getters.getArduinoByID(this.currentID) == undefined){
         console.log("This id is free");
-        this.$store.commit('addArduino');
+        this.$store.commit('addArduino', this.currentID);
       }
       console.log("This id exists");
     },

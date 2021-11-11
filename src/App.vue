@@ -2,7 +2,7 @@
   <img alt="Vue logo" src="./assets/logo.png">
 
 
-  <button name="testing" @click="test">test</button>
+<!--  <button name="testing" @click="test">test</button>-->
 <!--  <account-management></account-management>-->
   <navigation-bar></navigation-bar>
 <!--  <nav class="navbar navbar-expand-lg navbar-light bg-light">-->
@@ -42,7 +42,7 @@
 
 <!--  <button name="test" @click="test">test</button>-->
   <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
-  <arduino-properties></arduino-properties>
+<!--  <arduino-properties></arduino-properties>-->
   <colors-panel v-show="colorPanelVisible"></colors-panel>
 </template>
 
@@ -53,7 +53,7 @@ import ColorsPanel from "./components/ColorsPanel";
 import ArduinoProperties from "./components/ArduinoProperties";
 import NavigationBar from "./components/NavigationBar";
 import accountManagement from "./components/accountManagement";
-import {testing, userName} from "./main.js";
+// import {testing} from "./main.js";
 
 
 export default {
@@ -65,11 +65,11 @@ export default {
     NavigationBar,
     accountManagement
   },
-  methods: {
-    test() {
-      testing()
-    }
-  },
+  // methods: {
+  //   test() {
+  //     testing()
+  //   }
+  // },
 
 
   computed: {
