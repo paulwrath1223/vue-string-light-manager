@@ -55,7 +55,7 @@ export default createStore({
         enabled: false,
         // updated: false,
         colors: [
-          {color: "#000000", transitionFrames: 0},
+          {color: "#ffffff", transitionFrames: 1},
         ]
       })
     },
@@ -94,8 +94,8 @@ export default createStore({
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
       state.arduinoList[index].colors.push(
           {
-            color: "#000000",
-            transitionFrames: 0
+            color: "#ffffff",
+            transitionFrames: 1
           })
     },
     changeColorOfColorNode(state, colorNode){

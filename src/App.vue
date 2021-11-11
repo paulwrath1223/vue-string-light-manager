@@ -1,5 +1,5 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
+  <img alt="Vue logo" src="./assets/logo.png" style="width: 40%">
 
 
 <!--  <button name="testing" @click="test">test</button>-->

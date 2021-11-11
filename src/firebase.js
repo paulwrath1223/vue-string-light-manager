@@ -164,8 +164,9 @@ export async function downloadArduino(id)
     }
 
     console.log("flag 2");
+    arduinoOut.mirrorIndex = await getAttribute("/Arduinos/" + id + "/mirrorIndex");
     arduinoOut.speed = await getAttribute("/Arduinos/" + id + "/speed");
-    arduinoOut.numLights = await getAttribute("/Arduinos/" + id + "/numLights");
+    arduinoOut.lightsCount = await getAttribute("/Arduinos/" + id + "/numLights");
     arduinoOut.location = await getAttribute("/Arduinos/" + id + "/Name");
     console.log("flag 3");
     let rawColors = await getAttribute("/Arduinos/" + id + "/colors");
@@ -305,3 +306,7 @@ export function getExistingIds()
     return(getAttribute("/usedIds"));
 }
 
+export function getUID()
+{
+    return(uid);
+}

@@ -178,7 +178,7 @@ export default {
       const IDToDelete = this.currentID;
       console.log("function: localDeleteArduino\nID: " + IDToDelete);
       await deleteArduino(IDToDelete);
-      this.currentID = null;
+      this.currentID = -1;
       alert("Arduino ID " + IDToDelete + " has been deleted");
       await downloadAllArds();
 
