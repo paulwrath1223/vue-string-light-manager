@@ -14,7 +14,7 @@
         >Choose id</button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           <li><h5 class="dropdown-header">Choose id from database</h5></li>
-          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="new IDChosen($event, id);
+          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen($event, id);
             this.idInputVisible=false">{{id}}</a></li>
           <li><h5 class="dropdown-header">Create a new id</h5></li>
 <!--          @click="newArd"-->
@@ -24,7 +24,8 @@
         <!-- New id input -->
         <div class="input-group my-3" v-show="idInputVisible">
           <span class="input-group-text">ID: </span>
-          <input type="number" class="form-control" placeholder="ID" v-model="idInputValue" @change="UpdateID">
+          <input type="number" class="form-control" placeholder="ID" v-model="idInputValue">
+          <button class="btn btn-danger" id="btn-delete" @click=UpdateID :disabled="idInputValue<0">go</button>
         </div>
 
         <h1 id="currentID" v-show="currentID >= 0">ID: {{currentID}}</h1>
@@ -43,6 +44,8 @@
         <span class="input-group-text">Arduino name: </span>
         <input type="text" class="form-control" placeholder="Location"
                v-model="localLocation" :disabled="formDisabled" @change="UpdateLocation">
+        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+             v-show="localLocation === location && currentID >= 0">
       </div>
 
       <!-- Lights count input -->
@@ -50,6 +53,8 @@
         <span class="input-group-text">Lights count: </span>
         <input type="number" class="form-control" placeholder="Lights count"
                v-model="localNumLights" :disabled="formDisabled" @change="UpdateNumLights">
+        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+             v-show="localNumLights === numLights && currentID >= 0">
       </div>
 
       <!-- Speed input -->
@@ -57,19 +62,25 @@
         <span class="input-group-text">Speed: </span>
         <input type="number" class="form-control" placeholder="Speed"
                v-model="localSpeed" :disabled="formDisabled" @change="UpdateSpeed">
+        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+             v-show="localSpeed === speed && currentID >= 0">
       </div>
 
+      <!-- mirror enable switch-->
       <div class="form-check form-switch mx-auto" style="width: 150px">
         <input class="form-check-input" type="checkbox" @click="mirrorPointPresentSwitchToggled"
                :disabled="formDisabled" :checked="localMirrorEnabled">
-        <label class="form-check-label mx-2" id="mirrorPointPresent" >Mirroring: {{ localMirrorEnabled ? "On" : "Off"}}</label>
+        <label class="form-check-label mx-2" id="mirrorPointPresent" >
+          Mirroring: {{ localMirrorEnabled ? "On" : "Off"}}</label>
       </div>
 
       <!-- Mirror index input -->
       <div class="input-group mb-3">
         <span class="input-group-text">Mirror index: </span>
-        <input type="number" class="form-control" placeholder="Mirror index"
-               v-model="localMirrorIndex" :disabled="formDisabled || !this.localMirrorEnabled" @change="UpdateMirrorIndex">
+        <input type="number" class="form-control" placeholder="Mirror index" v-model="localMirrorIndex"
+               :disabled="formDisabled || !this.localMirrorEnabled" @change="UpdateMirrorIndex">
+        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+             v-show="localMirrorIndex === mirrorIndex && currentID >= 0">
       </div>
     </form>
   </div>
@@ -229,11 +240,11 @@ export default {
       console.log(vArdToUpload);
       await uploadArduino(vArdToUpload);
     },
-    IDChosen(event, id){
+    async IDChosen(event, id){
       this.currentID = id;
-      this.updateLocal();
+      this.updateLocalVars();
     },
-    updateLocal()
+    updateLocalVars()
     {
       if(this.mirrorIndex != null)
       {
@@ -286,7 +297,7 @@ export default {
         this.currentID = inputID;
         console.log("This id exists");
       }
-      this.updateLocal();
+      this.updateLocalVars();
     },
     UpdateLocation(){
       this.location = this.localLocation

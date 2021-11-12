@@ -1,5 +1,5 @@
 <template>
-  <img alt="logo" src="./assets/logo.png" style="width: 40%">
+  <img alt="logo" src="./assets/logo.png" style="width: 40%; max-width: 150px">
 
 
 <!--  <button name="testing" @click="test">test</button>-->

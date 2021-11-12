@@ -2,7 +2,7 @@
   <div class="card m-3 " :style="{backgroundColor: color}">
 
     <div class="card-header" >
-      <span class="input-group-text" style="max-width: 150px">Color{{id}}: {{color}} </span>
+      <span class="input-group-text" style="max-width: 150px">Color {{id + 1}}: {{color}} </span>
       <button class="btn btn-danger" id="btn-delete" @click=deleteColorNode>x</button>
     </div>
 
