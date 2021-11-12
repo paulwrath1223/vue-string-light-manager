@@ -12,7 +12,8 @@
         <div class="input-group mb-1 input-group-sm" id="my-input">
           <span class="input-group-text">Transition Frames: </span>
           <input class="form-control" placeholder="Transition frames" type=number
-                 v-model="transitionFrames" @change=transitionFramesChanged>
+                 v-model="transitionFrames" >
+<!--          @change=transitionFramesChanged-->
         </div>
         <!-- Color picker -->
         <div class="mt-2">
@@ -94,19 +95,19 @@ export default {
     //       .padStart(6, "0")
     //       .toUpperCase();
     // },
-    updateTransFrames()
-    {
-      this.localTransitionFrames = this.transitionFrames;
-    },
+    // updateTransFrames()
+    // {
+    //   this.localTransitionFrames = this.transitionFrames;
+    // },
 
 
-    transitionFramesChanged(){
-      if(!this.mounting)  //if this change was triggered by user and not by mounting
-      {
-        console.log("determined to be changed by user");
-        // this.transitionFrames = this.localTransitionFrames;
-      }
-    },
+    // transitionFramesChanged(){
+    //   if(!this.mounting)  //if this change was triggered by user and not by mounting
+    //   {
+    //     console.log("determined to be changed by user");
+    //     // this.transitionFrames = this.localTransitionFrames;
+    //   }
+    // },
 
     colorChanged(event){
       // this.color = this.localColor

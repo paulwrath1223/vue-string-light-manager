@@ -14,7 +14,8 @@
         >Choose id</button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           <li><h5 class="dropdown-header">Choose id from database</h5></li>
-          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen($event, id); this.idInputVisible=false">{{id}}</a></li>
+          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="new IDChosen($event, id);
+            this.idInputVisible=false">{{id}}</a></li>
           <li><h5 class="dropdown-header">Create a new id</h5></li>
 <!--          @click="newArd"-->
           <li class="dropdown-item" @click="ToggleIdInputVisibility" href="#">New id</li>
@@ -78,7 +79,7 @@
 <script>
 
 
-import {deleteArduino, downloadAllArds, getCurrentUserName, uploadArduino} from "@/firebase";
+import {deleteArduino, downloadAllArds, uploadArduino} from "@/firebase";
 import ColorsPanel from "@/components/ColorsPanel";
 
 export default {
@@ -108,7 +109,7 @@ export default {
       get() {
         let ids = [];
         for (let i = 0; i < this.$store.state.arduinoList.length; i++) {
-          console.log("new length of idlist:");
+          console.log("new length of id list:");
           console.log(ids.push(this.$store.state.arduinoList[i].arduinoID));
         }
 
@@ -145,7 +146,7 @@ export default {
 
     speed: {
       get(){
-        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getSpeedByArduinoID;;
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getSpeedByArduinoID;
       },
       set(val) {
         this.$store.commit('changeSpeedOfCurrentArduinoID', {speed: val})
@@ -276,7 +277,7 @@ export default {
       const inputID = this.idInputValue;
       console.log("function: UpdateID\nNew ID: ");
       console.log(this.currentID);
-      if(this.$store.getters.getArduinoByID(inputID) == undefined){
+      if(this.$store.getters.getArduinoByID(inputID) === undefined){
         console.log("This id is free");
         this.currentID = inputID;
         this.$store.commit('addArduino', this.currentID);
@@ -322,11 +323,11 @@ export default {
   margin:0 auto;
   max-width: 500px;
 }
-.switch{
-  width: 60px;
-  margin: 0 auto;
-  align-self: center;
-}
+/*.switch{*/
+/*  width: 60px;*/
+/*  margin: 0 auto;*/
+/*  align-self: center;*/
+/*}*/
 .arduinoProperties{
   padding: 20px;
 }

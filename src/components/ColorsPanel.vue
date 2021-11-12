@@ -2,7 +2,6 @@
   <div class="container p-5 my-5 border">
     <div class="colorNodes">
       <ColorNode
-          ref = "nodeRef"
           v-for="(node, i) in colorNodes"
           :id="i"
           v-on:delete="deleteColorNode(i)"
@@ -46,11 +45,6 @@ export default {
       for(let i = 0; i < this.colorNodes.length; i++){
         console.log(`Id: ${i}, color: ${this.colorNodes[i].color}, transitionFrames: ${this.colorNodes[i].transitionFrames}`)
       }
-    },
-    updatePanels()
-    {
-      // this.$refs.nodeRef[0].updateTransFrames();   // not working
-      console.log("ColorsPanel.updatePanels()")
     },
     deleteColorNode(index){
       console.log("successful emit, index: "+index)

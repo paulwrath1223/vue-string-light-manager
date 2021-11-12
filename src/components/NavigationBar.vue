@@ -74,10 +74,10 @@ export default {
     //     console.log("User changed") //todo
     //   }
     // },
-    userLoggedIn(){
-      console.log("getCurrentUserName() != null: " + (getCurrentUserName() != null));
-      return (getCurrentUserName() != null)
-    },
+    // userLoggedIn(){
+    //   console.log("getCurrentUserName() != null: " + (getCurrentUserName() != null));
+    //   return (getCurrentUserName() != null)
+    // },
     // logInPromote(){
     //   return (this.user.loggedIn) ? "Change account" : "Log in"
     // }

@@ -303,12 +303,12 @@ export async function deleteArduino(id)
     return await remove(tempRef);
 }
 
-export function getExistingIds()
-{
-    return(getAttribute("/usedIds"));
-}
-
-export function getUID()
-{
-    return(uid);
-}
+// export function getExistingIds()
+// {
+//     return(getAttribute("/usedIds"));
+// }
+//
+// export function getUID()
+// {
+//     return(uid);
+// }
