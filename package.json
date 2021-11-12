@@ -11,6 +11,7 @@
     "bootstrap": "^5.1.3",
     "core-js": "^3.6.5",
     "firebase": "^9.4.0",
+    "jenesius-vue-modal": "^1.3.1",
     "vue": "^3.0.0",
     "vuex": "^4.0.0-0"
   },
@@ -18,6 +19,7 @@
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
-    "@vue/compiler-sfc": "^3.0.0"
+    "@vue/compiler-sfc": "^3.0.0",
+    "raw-loader": "^4.0.2"
   }
 }
