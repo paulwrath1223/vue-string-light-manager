@@ -273,14 +273,19 @@ export default {
       this.currentID = -1;
     },
     UpdateID(){
-      this.currentID = this.idInputValue
+      const inputID = this.idInputValue;
       console.log("function: UpdateID\nNew ID: ");
       console.log(this.currentID);
-      if(this.$store.getters.getArduinoByID(this.currentID) == undefined){
+      if(this.$store.getters.getArduinoByID(inputID) == undefined){
         console.log("This id is free");
+        this.currentID = inputID;
         this.$store.commit('addArduino', this.currentID);
       }
-      console.log("This id exists");
+      else {
+        this.currentID = inputID;
+        console.log("This id exists");
+      }
+      this.updateLocal();
     },
     UpdateLocation(){
       this.location = this.localLocation
