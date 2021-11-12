@@ -22,55 +22,71 @@
 
         <!-- New id input -->
         <div class="input-group my-3" v-show="idInputVisible">
-          <span class="input-group-text">ID: {{currentID}}</span>
-          <input type="number" class="form-control" placeholder="ID" v-model="idInputValue" @keydown.enter="UpdateID">
+          <span class="input-group-text">ID: </span>
+          <input type="number" class="form-control" placeholder="ID" v-model="idInputValue" @change="UpdateID">
         </div>
 
-        <h1 id="currentID" v-show="currentID >= 0">{{currentID}}</h1>
+        <h1 id="currentID" v-show="currentID >= 0">ID: {{currentID}}</h1>
       </div>
     </form>
 
     <!-- Enabled toggle switch -->
     <div class="form-check form-switch mx-auto" style="width: 70px">
       <input class="form-check-input" type="checkbox" @click="switchToggled" :disabled="formDisabled" :checked="enabled">
-      <label class="form-check-label mx-2" id="enabledSwitchLabel" >Enabled</label>
+      <label class="form-check-label mx-2" id="enabledSwitchLabel" >{{ enabled ? "On" : "Off"}}</label>
     </div>
 
     <form class="align-self-center custom-centered">
       <!-- Location switch -->
       <div class="input-group mb-3">
-        <span class="input-group-text">Location: {{location}}</span>
-        <input type="text" class="form-control" placeholder="Location" v-model="localLocation" :disabled="formDisabled" @keydown.enter="UpdateLocation">
+        <span class="input-group-text">Arduino name: </span>
+        <input type="text" class="form-control" placeholder="Location"
+               v-model="localLocation" :disabled="formDisabled" @change="UpdateLocation">
       </div>
 
       <!-- Lights count input -->
       <div class="input-group mb-3">
-        <span class="input-group-text">Lights count: {{numLights}}</span>
-        <input type="number" class="form-control" placeholder="Lights count" v-model="localNumLights" :disabled="formDisabled" @keydown.enter="UpdateNumLights">
+        <span class="input-group-text">Lights count: </span>
+        <input type="number" class="form-control" placeholder="Lights count"
+               v-model="localNumLights" :disabled="formDisabled" @change="UpdateNumLights">
       </div>
 
       <!-- Speed input -->
       <div class="input-group mb-3">
-        <span class="input-group-text">Speed: {{speed}}</span>
-        <input type="number" class="form-control" placeholder="Speed" v-model="localSpeed" :disabled="formDisabled" @keydown.enter="UpdateSpeed">
+        <span class="input-group-text">Speed: </span>
+        <input type="number" class="form-control" placeholder="Speed"
+               v-model="localSpeed" :disabled="formDisabled" @change="UpdateSpeed">
+      </div>
+
+      <div class="form-check form-switch mx-auto" style="width: 150px">
+        <input class="form-check-input" type="checkbox" @click="mirrorPointPresentSwitchToggled"
+               :disabled="formDisabled" :checked="localMirrorEnabled">
+        <label class="form-check-label mx-2" id="mirrorPointPresent" >Mirroring: {{ localMirrorEnabled ? "On" : "Off"}}</label>
       </div>
 
       <!-- Mirror index input -->
       <div class="input-group mb-3">
-        <span class="input-group-text">Mirror index: {{mirrorIndex}}</span>
-        <input type="number" class="form-control" placeholder="Mirror index" v-model="localMirrorIndex" :disabled="formDisabled" @keydown.enter="UpdateMirrorIndex">
+        <span class="input-group-text">Mirror index: </span>
+        <input type="number" class="form-control" placeholder="Mirror index"
+               v-model="localMirrorIndex" :disabled="formDisabled || !this.localMirrorEnabled" @change="UpdateMirrorIndex">
       </div>
     </form>
   </div>
+  <colors-panel v-show="colorPanelVisible"></colors-panel>
 </template>
 
 <script>
 
 
-import {getExistingIds, deleteArduino, downloadAllArds, uploadArduino} from "@/firebase";
+import {deleteArduino, downloadAllArds, getCurrentUserName, uploadArduino} from "@/firebase";
+import ColorsPanel from "@/components/ColorsPanel";
 
 export default {
   name: "ArduinoProperties",
+  components:
+      {
+        ColorsPanel
+      },
   data(){
     return{
       localSpeed: null,
@@ -78,11 +94,16 @@ export default {
       idInputValue: 0,
       idInputVisible: false,
       localLocation: "",
-      localMirrorIndex: null
+      localMirrorIndex: null,
+      localMirrorEnabled: false,
+      localLastMirror: 0
       //location: ""
     }
   },
   computed: {
+    colorPanelVisible() {
+      return this.$store.state.currentArduinoID >= 0;
+    },
     arduinoIDs: {
       get() {
         let ids = [];
@@ -124,7 +145,7 @@ export default {
 
     speed: {
       get(){
-        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getSpeedByArduinoID
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getSpeedByArduinoID;;
       },
       set(val) {
         this.$store.commit('changeSpeedOfCurrentArduinoID', {speed: val})
@@ -173,6 +194,22 @@ export default {
       this.enabled = !this.enabled;
       console.log("switch toggled to " + this.enabled)
     },
+    mirrorPointPresentSwitchToggled()
+    {
+      this.localMirrorEnabled = !this.localMirrorEnabled;
+      console.log("mirror switch toggled to " + this.localMirrorEnabled)
+      if(this.localMirrorEnabled)
+      {
+        this.mirrorIndex =  this.localLastMirror;
+        this.localMirrorIndex = this.mirrorIndex;
+      }
+      else
+      {
+        this.localLastMirror = this.mirrorIndex;
+        this.mirrorIndex = 0;
+        this.localMirrorIndex = 0;
+      }
+    },
     async localDeleteArduino()
     {
       const IDToDelete = this.currentID;
@@ -191,8 +228,38 @@ export default {
       console.log(vArdToUpload);
       await uploadArduino(vArdToUpload);
     },
+    updateLocal()
+    {
+      if(this.mirrorIndex != null)
+      {
+        this.localSpeed = this.speed;
+        this.localLocation = this.location;
+        this.localNumLights = this.numLights;
+        this.localMirrorEnabled = this.mirrorIndex > 0;
+        if(this.localMirrorEnabled)
+        {
+          this.localMirrorIndex = this.mirrorIndex;
+        }
+        this.$refs.colorsPanel.components.ColorNode.methods.updateTransFrames();
+
+        //ColorsPanel: {components: {ColorNode: {data(): {localTransitionFrames: null}, computed: {color: {get(): any}, transitionFrames: {set(any=): void, get(): ... | ... | ... | ... | ...}}, methods: {transitionFramesChanged(): void, deleteColorNode(): void, updateTransFrames(): void, colorChanged(any): void}, name: string, mounted(): void, props: {id: Intl}}}, computed: {colorNodes: {set(any): void, get(): [] | any}, currentID: {set(any): void, get(): any}}, methods: {addColorNode(): void, deleteColorNode(any=): void}, name: string}
+
+      }
+      else
+      {
+        console.log("reload local values, but server has null:");
+        this.localSpeed = null;
+        this.localLocation = null;
+        this.localNumLights = null;
+        this.localMirrorEnabled = false;
+        this.localMirrorIndex = 0;
+        console.log("this.localMirrorIndex: " + this.localMirrorIndex);
+
+      }
+    },
     IDChosen(event, id){
       this.currentID = id
+      this.updateLocal();
     },
     ToggleIdInputVisibility(){
       this.idInputVisible = !this.idInputVisible
@@ -210,19 +277,29 @@ export default {
     },
     UpdateLocation(){
       this.location = this.localLocation
-      this.localLocation = null
+
     },
     UpdateNumLights(){
       this.numLights = this.localNumLights
-      this.localNumLights = null
+
     },
     UpdateSpeed(){
       this.speed = this.localSpeed
-      this.localSpeed = null
+
     },
     UpdateMirrorIndex(){
-      this.mirrorIndex = this.localMirrorIndex
-      this.localMirrorIndex = null
+      const indexInForm = this.localMirrorIndex;
+      if(indexInForm > this.numLights)
+      {
+        alert("Mirror index must be less that the number of lights in the string!")
+        this.localMirrorIndex = this.numLights - 1;
+        this.mirrorIndex = this.localMirrorIndex;
+      }
+      else{
+        this.mirrorIndex = indexInForm;
+      }
+
+
     }
   }
 }

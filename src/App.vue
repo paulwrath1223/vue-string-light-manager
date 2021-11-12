@@ -43,7 +43,7 @@
 <!--  <button name="test" @click="test">test</button>-->
   <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
 <!--  <arduino-properties></arduino-properties>-->
-  <colors-panel v-show="colorPanelVisible"></colors-panel>
+<!--  <colors-panel v-show="colorPanelVisible"></colors-panel>                   UNCOMMENT IF SOMETHING DIES-->
 </template>
 
 <script>

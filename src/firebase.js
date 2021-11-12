@@ -45,7 +45,7 @@ function arduinoToJson(arduinoNotJSON)
         "colorLength": colorJSON.length,
         "colors": colorJSON,
         "keyFrameIndices": extractKeyFrameIndices(arduinoNotJSON),
-        "mirrorIndex" : arduinoNotJSON.mirrorIndex,
+        "mirrorIndex" : (arduinoNotJSON.mirrorIndex == null) ? 0 : arduinoNotJSON.mirrorIndex,
         "numLights" : arduinoNotJSON.lightsCount,
         "speed" : arduinoNotJSON.speed,
         "state" : arduinoNotJSON.enabled,
@@ -219,14 +219,15 @@ export async function downloadArduino(id)
 }
 
 
-async function verifyUser()
+function verifyUser()
 {
     if(globalUser == null)
     {
         alert("you must be signed in to do that");
     }
-
 }
+
+
 
 async function getAttribute(path) {
     await verifyUser();

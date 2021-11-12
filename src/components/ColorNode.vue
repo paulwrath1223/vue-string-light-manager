@@ -10,8 +10,9 @@
       <form>
         <!-- Transition frames -->
         <div class="input-group mb-1 input-group-sm" id="my-input">
-          <span class="input-group-text">Transition Frames: {{transitionFrames}}</span>
-          <input class="form-control" placeholder="Transition frames" type=number v-model=localTransitionFrames v-on:keyup.enter=transitionFramesChanged>
+          <span class="input-group-text">Transition Frames: </span>
+          <input class="form-control" placeholder="Transition frames" type=number
+                 v-model=localTransitionFrames v-on:change=transitionFramesChanged>
         </div>
         <!-- Color picker -->
         <div class="mt-2">
@@ -35,7 +36,7 @@ export default {
   },
   mounted() {
     this.localColor = this.color
-    //this.localTransitionFrames = this.transitionFrames
+    // this.localTransitionFrames = this.transitionFrames
   },
   props:{
     id: Intl,
@@ -89,10 +90,14 @@ export default {
     //       .padStart(6, "0")
     //       .toUpperCase();
     // },
+    updateTransFrames()
+    {
+      this.localTransitionFrames = this.transitionFrames;
+    },
+
 
     transitionFramesChanged(){
-      this.transitionFrames = this.localTransitionFrames
-      this.localTransitionFrames = null
+      this.transitionFrames = this.localTransitionFrames;
     },
 
     colorChanged(event){

@@ -90,6 +90,8 @@ export default {
     },
     async reloadArds()
     {
+      this.$refs.arduinoProperties.updateLocal();
+      console.log("reloading arduinos");
       this.$store.commit('changeDatabase', await downloadAllArds());
     },
     async sign() {
