@@ -229,6 +229,10 @@ export default {
       console.log(vArdToUpload);
       await uploadArduino(vArdToUpload);
     },
+    IDChosen(event, id){
+      this.currentID = id;
+      this.updateLocal();
+    },
     updateLocal()
     {
       if(this.mirrorIndex != null)
@@ -244,7 +248,7 @@ export default {
         else {
           this.localMirrorIndex = null;
         }
-        this.$refs.colorPanel.updatePanels();
+        // this.$refs.colorPanel.updatePanels();
 
         //ColorsPanel: {components: {ColorNode: {data(): {localTransitionFrames: null}, computed: {color: {get(): any}, transitionFrames: {set(any=): void, get(): ... | ... | ... | ... | ...}}, methods: {transitionFramesChanged(): void, deleteColorNode(): void, updateTransFrames(): void, colorChanged(any): void}, name: string, mounted(): void, props: {id: Intl}}}, computed: {colorNodes: {set(any): void, get(): [] | any}, currentID: {set(any): void, get(): any}}, methods: {addColorNode(): void, deleteColorNode(any=): void}, name: string}
 
@@ -260,10 +264,6 @@ export default {
         console.log("this.localMirrorIndex: " + this.localMirrorIndex);
 
       }
-    },
-    IDChosen(event, id){
-      this.currentID = id
-      this.updateLocal();
     },
     ToggleIdInputVisibility(){
       this.idInputVisible = !this.idInputVisible
