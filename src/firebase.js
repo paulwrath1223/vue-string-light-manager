@@ -168,6 +168,7 @@ export async function downloadArduino(id)
     arduinoOut.speed = await getAttribute("/Arduinos/" + id + "/speed");
     arduinoOut.lightsCount = await getAttribute("/Arduinos/" + id + "/numLights");
     arduinoOut.location = await getAttribute("/Arduinos/" + id + "/Name");
+    arduinoOut.enabled = await getAttribute("/Arduinos/" + id + "/state");
     console.log("flag 3");
     let rawColors = await getAttribute("/Arduinos/" + id + "/colors");
     console.log("getting keyframe indices: ");

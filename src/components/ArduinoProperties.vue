@@ -72,7 +72,7 @@
       </div>
     </form>
   </div>
-  <colors-panel v-show="colorPanelVisible"></colors-panel>
+  <colorsPanel ref = "colorPanel" v-show="colorPanelVisible"/>
 </template>
 
 <script>
@@ -207,7 +207,7 @@ export default {
       {
         this.localLastMirror = this.mirrorIndex;
         this.mirrorIndex = 0;
-        this.localMirrorIndex = 0;
+        this.localMirrorIndex = null;
       }
     },
     async localDeleteArduino()
@@ -240,7 +240,10 @@ export default {
         {
           this.localMirrorIndex = this.mirrorIndex;
         }
-        this.$refs.colorsPanel.components.ColorNode.methods.updateTransFrames();
+        else {
+          this.localMirrorIndex = null;
+        }
+        this.$refs.colorPanel.updatePanels();
 
         //ColorsPanel: {components: {ColorNode: {data(): {localTransitionFrames: null}, computed: {color: {get(): any}, transitionFrames: {set(any=): void, get(): ... | ... | ... | ... | ...}}, methods: {transitionFramesChanged(): void, deleteColorNode(): void, updateTransFrames(): void, colorChanged(any): void}, name: string, mounted(): void, props: {id: Intl}}}, computed: {colorNodes: {set(any): void, get(): [] | any}, currentID: {set(any): void, get(): any}}, methods: {addColorNode(): void, deleteColorNode(any=): void}, name: string}
 
@@ -252,7 +255,7 @@ export default {
         this.localLocation = null;
         this.localNumLights = null;
         this.localMirrorEnabled = false;
-        this.localMirrorIndex = 0;
+        this.localMirrorIndex = null;
         console.log("this.localMirrorIndex: " + this.localMirrorIndex);
 
       }
@@ -264,6 +267,10 @@ export default {
     ToggleIdInputVisibility(){
       this.idInputVisible = !this.idInputVisible
       this.currentID = -1
+    },
+    resetID()
+    {
+      this.currentID = -1;
     },
     UpdateID(){
       this.currentID = this.idInputValue
