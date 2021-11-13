@@ -15,7 +15,7 @@
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           <li><h5 class="dropdown-header">Choose id from database</h5></li>
           <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen($event, id);
-            this.idInputVisible=false">{{id}}</a></li>
+            this.idInputVisible=false">{{id}}: {{this.$store.getters.getLocationByArduinoID(id)}}</a></li>
           <li><h5 class="dropdown-header">Create a new id</h5></li>
 <!--          @click="newArd"-->
           <li class="dropdown-item" @click="ToggleIdInputVisibility" href="#">New id</li>
@@ -246,6 +246,7 @@ export default {
     },
     updateLocalVars()
     {
+      console.log("updateLocalVars()");
       if(this.mirrorIndex != null)
       {
         this.localSpeed = this.speed;
@@ -284,31 +285,34 @@ export default {
     {
       this.currentID = -1;
     },
-    UpdateID(){
+    async UpdateID(){
       const inputID = this.idInputValue;
       console.log("function: UpdateID\nNew ID: ");
-      console.log(this.currentID);
-      if(this.$store.getters.getArduinoByID(inputID) === undefined){
-        console.log("This id is free");
-        this.currentID = inputID;
-        this.$store.commit('addArduino', this.currentID);
-      }
-      else {
-        this.currentID = inputID;
-        console.log("This id exists");
-      }
-      this.updateLocalVars();
-    },
-    UpdateLocation(){
-      this.location = this.localLocation
+      console.log(inputID);
+      if(inputID >= 0)
+      {
 
+        if(this.$store.getters.getArduinoByID(inputID) == undefined){
+          console.log("This id is free");
+          this.currentID = inputID;
+          await this.$store.commit('addArduino', inputID);
+        }
+        else {
+          this.currentID = inputID;
+          console.log("This id exists");
+        }
+        this.updateLocalVars();
+      }
+    },
+    UpdateLocation()
+    {
+      this.location = this.localLocation;
     },
     UpdateNumLights(){
-      this.numLights = this.localNumLights
-
+      this.numLights = this.localNumLights;
     },
     UpdateSpeed(){
-      this.speed = this.localSpeed
+      this.speed = this.localSpeed;
 
     },
     UpdateMirrorIndex(){
