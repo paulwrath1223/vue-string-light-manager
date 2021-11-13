@@ -14,6 +14,9 @@
 <!--            <a class="nav-link" href="#">Turn On/Off</a>-->
 <!--          </li>-->
           <li class="nav-item" v-show="user.loggedIn">
+            <a class="nav-link"  @click="showUID" :class="{disabled: !user.loggedIn}" href="#">Get UID</a>
+          </li>
+          <li class="nav-item" v-show="user.loggedIn">
             <a class="nav-link"  @click="uploadArduino" :class="{disabled: !user.loggedIn}" href="#">Upload</a>
           </li>
           <li class="nav-item" v-show="user.loggedIn">
@@ -39,14 +42,14 @@
       </div>
     </div>
   </nav>
-  <ArduinoProperties ref="arduinoProperties" />
+  <ArduinoProperties ref="arduinoProperties"/>
 
 </template>
 
 <script>
 
 import {signIn} from "@/main";
-import {downloadAllArds, getCurrentUserImage, getCurrentUserName} from "@/firebase";
+import {downloadAllArds, getCurrentUserImage, getCurrentUserName, getUID} from "@/firebase";
 import ArduinoProperties from "@/components/ArduinoProperties";
 
 
@@ -74,10 +77,7 @@ export default {
     //     console.log("User changed") //todo
     //   }
     // },
-    // userLoggedIn(){
-    //   console.log("getCurrentUserName() != null: " + (getCurrentUserName() != null));
-    //   return (getCurrentUserName() != null)
-    // },
+
     // logInPromote(){
     //   return (this.user.loggedIn) ? "Change account" : "Log in"
     // }
@@ -101,7 +101,7 @@ export default {
 
       this.user.name = getCurrentUserName();
       this.user.image = getCurrentUserImage();
-      this.user.loggedIn = (getCurrentUserName() != null)
+      this.user.loggedIn = (getCurrentUserName() != null);
       console.log("new user name: " + (this.user.name));
       console.log("this.userLoggedIn: " + (this.user.loggedIn));
       this.$store.commit('changeDatabase', await downloadAllArds());
@@ -109,7 +109,12 @@ export default {
     async uploadArduino()
     {
       await this.$refs.arduinoProperties.uploadArduinoFromAP();
+    },
+    showUID()
+    {
+      alert("this is used in the code for the esp8266.\n" + getUID())
     }
+
   }
 }
 </script>

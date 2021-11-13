@@ -10,12 +10,13 @@
             type="button"
             id="dropdownMenuButton1"
             data-bs-toggle="dropdown"
-            aria-expanded="false"
-        >Choose id</button>
+            aria-expanded="false">
+            Choose id</button>
+<!--            :disabled="serverUserLoggedIn"-->
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           <li><h5 class="dropdown-header">Choose id from database</h5></li>
-          <li><a v-for="id in arduinoIDs" class="dropdown-item" href="#" @click="IDChosen($event, id);
-            this.idInputVisible=false">{{id}}: {{this.$store.getters.getLocationByArduinoID(id)}}</a></li>
+          <li><a v-for="id in arduinoNameIDs" class="dropdown-item" href="#" @click="IDChosen($event, id);
+            this.idInputVisible=false">{{id}}</a></li>
           <li><h5 class="dropdown-header">Create a new id</h5></li>
 <!--          @click="newArd"-->
           <li class="dropdown-item" @click="ToggleIdInputVisibility" href="#">New id</li>
@@ -140,6 +141,21 @@ export default {
         console.log("arduinoIdsList cannot be edited to: "+value)
       },
     },
+    arduinoNameIDs: {
+      get() {
+        let ids = [];
+        for (let i = 0; i < this.$store.state.arduinoList.length; i++) {
+
+          const IDName = this.$store.state.arduinoList[i].arduinoID + ": " + this.$store.state.arduinoList[i].location
+          console.log(ids.push(IDName));
+        }
+        console.log(this.$store.state.arduinoList);
+        return ids;
+      },
+      set(value){
+        console.log("arduinoIdsList cannot be edited to: "+value)
+      },
+    },
 
     currentID: {
       get(){
@@ -240,8 +256,19 @@ export default {
       console.log(vArdToUpload);
       await uploadArduino(vArdToUpload);
     },
-    async IDChosen(event, id){
-      this.currentID = id;
+    async IDChosen(event, idName){
+      console.log("ID chosen");
+      let id = "";
+      let index = 1;
+      while(!id.includes(":"))
+      {
+        console.log("id: " + id)
+        id = idName.substring(0, index);
+        index++;
+      }
+      id = idName.substring(0, index-2);
+      console.log("final id: " + id)
+      this.currentID = Number(id);
       this.updateLocalVars();
     },
     updateLocalVars()
@@ -267,6 +294,7 @@ export default {
       }
       else
       {
+
         console.log("reload local values, but server has null:");
         this.localSpeed = null;
         this.localLocation = null;

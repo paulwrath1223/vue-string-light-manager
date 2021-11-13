@@ -308,7 +308,7 @@ export async function deleteArduino(id)
 //     return(getAttribute("/usedIds"));
 // }
 //
-// export function getUID()
-// {
-//     return(uid);
-// }
+export function getUID()
+{
+    return(uid);
+}
