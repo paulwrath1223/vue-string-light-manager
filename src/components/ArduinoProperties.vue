@@ -45,8 +45,9 @@
         <span class="input-group-text">Arduino name: </span>
         <input type="text" class="form-control" placeholder="Location"
                v-model="localLocation" :disabled="formDisabled" @change="UpdateLocation">
-        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+        <img id="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localLocation === location && currentID >= 0">
+<!--        ; max-width: 40px-->
       </div>
 
       <!-- Lights count input -->
@@ -54,7 +55,7 @@
         <span class="input-group-text">Lights count: </span>
         <input type="number" class="form-control" placeholder="Lights count"
                v-model="localNumLights" :disabled="formDisabled" @change="UpdateNumLights">
-        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+        <img id="checkmarkImg1" alt="updated" src="../assets/checkMark.png"
              v-show="localNumLights === numLights && currentID >= 0">
       </div>
 
@@ -63,7 +64,7 @@
         <span class="input-group-text">Speed: </span>
         <input type="number" class="form-control" placeholder="Speed"
                v-model="localSpeed" :disabled="formDisabled" @change="UpdateSpeed">
-        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+        <img id="checkmarkImg2" alt="updated" src="../assets/checkMark.png"
              v-show="localSpeed === speed && currentID >= 0">
       </div>
 
@@ -80,7 +81,7 @@
         <span class="input-group-text">Mirror index: </span>
         <input type="number" class="form-control" placeholder="Mirror index" v-model="localMirrorIndex"
                :disabled="formDisabled || !this.localMirrorEnabled" @change="UpdateMirrorIndex">
-        <img alt="updated" src="../assets/checkMark.png" style="width: 10%; max-width: 40px"
+        <img id="checkmarkImg3" alt="updated" src="../assets/checkMark.png"
              v-show="localMirrorIndex === mirrorIndex && currentID >= 0">
       </div>
     </form>
@@ -335,6 +336,7 @@ export default {
     UpdateLocation()
     {
       this.location = this.localLocation;
+
     },
     UpdateNumLights(){
       this.numLights = this.localNumLights;
@@ -378,9 +380,24 @@ export default {
 /*.form-check{*/
 /*  padding: 20px;*/
 /*}*/
-
 #currentID{
   padding-top: 20px;
 
+}
+#checkmarkImg{
+  padding: 7px;
+  width: 8%;
+}
+#checkmarkImg1{
+  padding: 7px;
+  width: 8%;
+}
+#checkmarkImg2{
+  padding: 7px;
+  width: 8%;
+}
+#checkmarkImg3{
+  padding: 7px;
+  width: 8%;
 }
 </style>

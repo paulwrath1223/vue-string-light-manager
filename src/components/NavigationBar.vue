@@ -25,6 +25,9 @@
           <li class="nav-item" v-show="user.loggedIn">
             <a class="nav-link"  @click="deleteArduino" :class="{disabled: !user.loggedIn}" href="#">Delete</a>
           </li>
+          <li class="nav-item" v-show="user.loggedIn">
+            <a class="nav-link"  @click="claimUID" :class="{disabled: !user.loggedIn}" href="#">Add controller</a>
+          </li>
           <li class="nav-item" v-show="!user.loggedIn">
             <a class="nav-link"  @click="sign" href="#">sign in</a>
           </li>
@@ -106,13 +109,17 @@ export default {
       console.log("this.userLoggedIn: " + (this.user.loggedIn));
       this.$store.commit('changeDatabase', await downloadAllArds());
     },
+    claimUID()
+    {
+
+    },
     async uploadArduino()
     {
       await this.$refs.arduinoProperties.uploadArduinoFromAP();
     },
     showUID()
     {
-      alert("this is used in the code for the esp8266.\n" + getUID())
+      alert("this is used in the code for the esp8266:\n\n" + getUID())
     }
 
   }
