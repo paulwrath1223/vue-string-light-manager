@@ -14,6 +14,7 @@ export default createStore({
   },
 
   getters: {
+
     getArduinoByID: (state) => (id) =>{
       return state.arduinoList.find(arduino => arduino.arduinoID === id)
     },
@@ -24,6 +25,9 @@ export default createStore({
     },
     getSpeedByArduinoID(state, getters){
       return state.arduinoList[getters.getArduinoIndex].speed
+    },
+    getWaveModeByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].waveMode
     },
     getLightsCountByArduinoID(state, getters){
       return state.arduinoList[getters.getArduinoIndex].lightsCount
@@ -53,6 +57,7 @@ export default createStore({
         lightsCount: null,
         mirrorIndex: 0,
         enabled: false,
+        waveMode: true,
         // updated: false,
         colors: [
           {color: "#ffffff", transitionFrames: 1},
@@ -71,6 +76,10 @@ export default createStore({
     changeSpeedOfCurrentArduinoID(state, arduino){
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))
       state.arduinoList[index].speed = arduino.speed
+    },
+    changeWaveModeOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID));
+      state.arduinoList[index].waveMode = arduino.waveMode;
     },
     changeLocationOfCurrentArduinoID(state, arduino){
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))

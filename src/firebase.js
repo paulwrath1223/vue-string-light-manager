@@ -49,6 +49,7 @@ function arduinoToJson(arduinoNotJSON)
         "numLights" : arduinoNotJSON.lightsCount,
         "speed" : arduinoNotJSON.speed,
         "state" : arduinoNotJSON.enabled,
+        "waveMode" : arduinoNotJSON.waveMode,
         "update" : true // ALWAYS TRUE
     });
 
@@ -230,11 +231,19 @@ function verifyUser()
 
 
 
-async function getAttribute(path) {
+async function getAttribute(path, absolute = false) {
     await verifyUser();
     const db = getDatabase(app);
     let tempResult = undefined;
-    const tempPath = ("users/" + uid + path);
+    let tempPath = ""
+    if(absolute)
+    {
+        tempPath = (path);
+    }
+    else
+    {
+        tempPath = ("users/" + uid + path);
+    }
     const tempRef = ref(db, tempPath);
     onValue(tempRef, (snapshot) => {
         tempResult = snapshot.val();
@@ -311,4 +320,10 @@ export async function deleteArduino(id)
 export function getUID()
 {
     return(uid);
+}
+
+export async function getOwnerOf(UID)
+{
+    const uidPath = "arduinoUIDs/" + UID + "/associatedUID";
+    return(await getAttribute(uidPath, true));
 }

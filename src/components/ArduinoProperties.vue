@@ -68,10 +68,20 @@
              v-show="localSpeed === speed && currentID >= 0">
       </div>
 
+      <!--wave enable switch-->
+      <div class="form-check form-switch mx-auto" style="width: 200px">
+        <input class="form-check-input" type="checkbox" @click="waveModeSwitchToggled"
+               :disabled="formDisabled" :checked="waveMode">
+        <label class="form-check-label mx-2" id="waveModeSwitch" >
+          Wave mode: {{ waveMode ? "On" : "Off"}}</label>
+      </div>
+
+      <hr>
+
       <!-- mirror enable switch-->
       <div class="form-check form-switch mx-auto" style="width: 150px">
         <input class="form-check-input" type="checkbox" @click="mirrorPointPresentSwitchToggled"
-               :disabled="formDisabled" :checked="localMirrorEnabled">
+               :disabled="formDisabled || !this.waveMode" :checked="localMirrorEnabled">
         <label class="form-check-label mx-2" id="mirrorPointPresent" >
           Mirroring: {{ localMirrorEnabled ? "On" : "Off"}}</label>
       </div>
@@ -80,7 +90,7 @@
       <div class="input-group mb-3">
         <span class="input-group-text">Mirror index: </span>
         <input type="number" class="form-control" placeholder="Mirror index" v-model="localMirrorIndex"
-               :disabled="formDisabled || !this.localMirrorEnabled" @change="UpdateMirrorIndex">
+               :disabled="formDisabled || !this.localMirrorEnabled || !this.waveMode" @change="UpdateMirrorIndex">
         <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localMirrorIndex === mirrorIndex && currentID >= 0">
       </div>
@@ -111,7 +121,8 @@ export default {
       localLocation: "",
       localMirrorIndex: null,
       localMirrorEnabled: false,
-      localLastMirror: 0
+      localLastMirror: 0,
+      localWaveMode: true
       //location: ""
     }
   },
@@ -170,6 +181,15 @@ export default {
     formDisabled: {
       get(){
         return this.currentID < 0
+      }
+    },
+
+    waveMode: {
+      get(){
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getWaveModeByArduinoID;
+      },
+      set(val){
+        this.$store.commit('changeWaveModeOfCurrentArduinoID', {waveMode: val})
       }
     },
 
@@ -239,6 +259,12 @@ export default {
         this.mirrorIndex = 0;
         this.localMirrorIndex = null;
       }
+    },
+
+    waveModeSwitchToggled()
+    {
+      // this.localWaveMode = ! this.localWaveMode;
+      this.waveMode = ! this.waveMode;
     },
     async localDeleteArduino()
     {
