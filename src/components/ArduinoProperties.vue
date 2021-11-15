@@ -45,7 +45,7 @@
         <span class="input-group-text">Arduino name: </span>
         <input type="text" class="form-control" placeholder="Location"
                v-model="localLocation" :disabled="formDisabled" @change="UpdateLocation">
-        <img id="checkmarkImg" alt="updated" src="../assets/checkMark.png"
+        <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localLocation === location && currentID >= 0">
 <!--        ; max-width: 40px-->
       </div>
@@ -55,7 +55,7 @@
         <span class="input-group-text">Lights count: </span>
         <input type="number" class="form-control" placeholder="Lights count"
                v-model="localNumLights" :disabled="formDisabled" @change="UpdateNumLights">
-        <img id="checkmarkImg1" alt="updated" src="../assets/checkMark.png"
+        <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localNumLights === numLights && currentID >= 0">
       </div>
 
@@ -64,7 +64,7 @@
         <span class="input-group-text">Speed: </span>
         <input type="number" class="form-control" placeholder="Speed"
                v-model="localSpeed" :disabled="formDisabled" @change="UpdateSpeed">
-        <img id="checkmarkImg2" alt="updated" src="../assets/checkMark.png"
+        <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localSpeed === speed && currentID >= 0">
       </div>
 
@@ -81,12 +81,13 @@
         <span class="input-group-text">Mirror index: </span>
         <input type="number" class="form-control" placeholder="Mirror index" v-model="localMirrorIndex"
                :disabled="formDisabled || !this.localMirrorEnabled" @change="UpdateMirrorIndex">
-        <img id="checkmarkImg3" alt="updated" src="../assets/checkMark.png"
+        <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localMirrorIndex === mirrorIndex && currentID >= 0">
       </div>
     </form>
+
+  <colorsPanel v-show="colorPanelVisible" ref = "colorPanel"/>
   </div>
-  <colorsPanel ref = "colorPanel" v-show="colorPanelVisible"/>
 </template>
 
 <script>
@@ -242,12 +243,17 @@ export default {
     async localDeleteArduino()
     {
       const IDToDelete = this.currentID;
-      console.log("function: localDeleteArduino\nID: " + IDToDelete);
-      await deleteArduino(IDToDelete);
-      this.currentID = -1;
-      alert("Arduino ID " + IDToDelete + " has been deleted");
-      await downloadAllArds();
-
+      if(IDToDelete === -1)
+      {
+        alert("please select an arduino before deleting");
+      }
+      else {
+        console.log("function: localDeleteArduino\nID: " + IDToDelete);
+        await deleteArduino(IDToDelete);
+        this.currentID = -1;
+        alert("Arduino ID " + IDToDelete + " has been deleted");
+        await downloadAllArds();
+      }
     },
     async uploadArduinoFromAP()
     {
@@ -384,20 +390,9 @@ export default {
   padding-top: 20px;
 
 }
-#checkmarkImg{
+.checkmarkImg{
   padding: 7px;
   width: 8%;
 }
-#checkmarkImg1{
-  padding: 7px;
-  width: 8%;
-}
-#checkmarkImg2{
-  padding: 7px;
-  width: 8%;
-}
-#checkmarkImg3{
-  padding: 7px;
-  width: 8%;
-}
+
 </style>

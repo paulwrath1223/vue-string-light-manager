@@ -1,52 +1,53 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarToggler01">
-        <a class="navbar-brand" href="#">String Light Manager</a>
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<!--          <li class="nav-item" v-show="user.loggedIn">-->
-<!--            <a class="nav-link active" aria-current="page" href="#">Arduino</a>-->
-<!--          </li>-->
-<!--          <li class="nav-item" v-show="user.loggedIn">-->
-<!--            <a class="nav-link" href="#">Turn On/Off</a>-->
-<!--          </li>-->
-          <li class="nav-item" v-show="user.loggedIn">
-            <a class="nav-link"  @click="showUID" :class="{disabled: !user.loggedIn}" href="#">Get UID</a>
-          </li>
-          <li class="nav-item" v-show="user.loggedIn">
-            <a class="nav-link"  @click="uploadArduino" :class="{disabled: !user.loggedIn}" href="#">Upload</a>
-          </li>
-          <li class="nav-item" v-show="user.loggedIn">
-            <a class="nav-link"  @click="reloadArds" :class="{disabled: !user.loggedIn}" href="#">Download</a>
-          </li>
-          <li class="nav-item" v-show="user.loggedIn">
-            <a class="nav-link"  @click="deleteArduino" :class="{disabled: !user.loggedIn}" href="#">Delete</a>
-          </li>
-          <li class="nav-item" v-show="user.loggedIn">
-            <a class="nav-link"  @click="claimUID" :class="{disabled: !user.loggedIn}" href="#">Add controller</a>
-          </li>
-          <li class="nav-item" v-show="!user.loggedIn">
-            <a class="nav-link"  @click="sign" href="#">sign in</a>
-          </li>
-        </ul>
-        <div class="container-fluid me-0" style="width: 150px" v-show="user.loggedIn">
-          {{ user.name }}
-          <img :src="user.image"
-               class="rounded-circle"
-               height="40"
-               width="40"
-               alt = "profile picture"
-          >
+  <div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler01">
+          <a class="navbar-brand" href="#">String Light Manager</a>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  <!--          <li class="nav-item" v-show="user.loggedIn">-->
+  <!--            <a class="nav-link active" aria-current="page" href="#">Arduino</a>-->
+  <!--          </li>-->
+  <!--          <li class="nav-item" v-show="user.loggedIn">-->
+  <!--            <a class="nav-link" href="#">Turn On/Off</a>-->
+  <!--          </li>-->
+            <li class="nav-item" v-show="user.loggedIn">
+              <a class="nav-link"  @click="showUID" :class="{disabled: !user.loggedIn}" href="#">Get UID</a>
+            </li>
+            <li class="nav-item" v-show="user.loggedIn">
+              <a class="nav-link"  @click="uploadArduino" :class="{disabled: !user.loggedIn}" href="#">Upload</a>
+            </li>
+            <li class="nav-item" v-show="user.loggedIn">
+              <a class="nav-link"  @click="reloadArds" :class="{disabled: !user.loggedIn}" href="#">Download</a>
+            </li>
+            <li class="nav-item" v-show="user.loggedIn">
+              <a class="nav-link"  @click="deleteArduino" :class="{disabled: !user.loggedIn}" href="#">Delete</a>
+            </li>
+            <li class="nav-item" v-show="user.loggedIn">
+              <a class="nav-link"  @click="claimUID" :class="{disabled: !user.loggedIn}" href="#">{{linkMode ? "Configure" : "Add controller"}}</a>
+            </li>
+            <li class="nav-item" v-show="!user.loggedIn">
+              <a class="nav-link"  @click="sign" href="#">sign in</a>
+            </li>
+          </ul>
+          <div class="container-fluid me-0" style="width: 200px" v-show="user.loggedIn">
+            {{ user.name }}
+            <img :src="user.image"
+                 class="rounded-circle"
+                 height="40"
+                 width="40"
+                 alt = "profile picture"
+            >
 
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
-  <ArduinoProperties ref="arduinoProperties"/>
-
+    </nav>
+    <ArduinoProperties v-show="showArduinoProperties" ref = "arduinoProperties"/>
+  </div>
 </template>
 
 <script>
@@ -63,6 +64,7 @@ export default {
   },
   data(){
     return {
+      linkMode : false,
       user : {
         loggedIn: (getCurrentUserName() != null),
         name: getCurrentUserName(),
@@ -80,6 +82,9 @@ export default {
     //     console.log("User changed") //todo
     //   }
     // },
+    showArduinoProperties() {
+      return !this.linkMode
+    }
 
     // logInPromote(){
     //   return (this.user.loggedIn) ? "Change account" : "Log in"
@@ -111,7 +116,7 @@ export default {
     },
     claimUID()
     {
-
+      this.linkMode = !this.linkMode;
     },
     async uploadArduino()
     {
