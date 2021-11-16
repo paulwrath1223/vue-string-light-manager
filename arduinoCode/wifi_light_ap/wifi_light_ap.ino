@@ -1,12 +1,29 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
-#include <EEPROM.h>
 #include <Firebase_ESP_Client.h>
 #include <Adafruit_NeoPixel.h>
 #include <addons/TokenHelper.h>
 #include <addons/RTDBHelper.h>
+#include <EEPROM.h>
  
+
+// //Comment to exclude Cloud Firestore
+// #define ENABLE_FIRESTORE
+
+// //Comment to exclude Firebase Cloud Messaging
+// #define ENABLE_FCM
+
+// //Comment to exclude Firebase Storage
+// #define ENABLE_FB_STORAGE
+
+// //Comment to exclude Cloud Storage
+// #define ENABLE_GC_STORAGE
+
+// //Comment to exclude Cloud Function for Firebase
+// #define ENABLE_FB_FUNCTIONS
+
+
 
 FirebaseData fbdo;
 
@@ -33,7 +50,7 @@ void launchWeb(void);
 void setupAP(void);
 void updateCloud(boolean);
 
-#define localUID 661195780
+#define localUID "661195AIH780"  // Has concat issues on lines 377, 548, 562.    (error: invalid operands of types 'const char [13]' and 'const char [13]' to binary 'operator+')
 
 String UserUID = "";
 int id = 0;
@@ -112,9 +129,9 @@ void setup()
   Serial.println();
   Serial.println("Disconnecting previously connected WiFi");
   WiFi.disconnect();
-  EEPROM.begin(512); //Initialasing EEPROM
+  EEPROM.begin(512); //Initialising EEPROM
   delay(10);
-  pinMode(LED_BUILTIN, OUTPUT);
+
   Serial.println();
   Serial.println();
   Serial.println("Startup");
@@ -310,7 +327,7 @@ bool testWifi(void)
     }
     delay(500);
     Serial.print("*");
-    c++;
+    c++;   //lmao
   }
   Serial.println("");
   Serial.println("Connect timed out, opening AP");
@@ -374,7 +391,7 @@ void setupAP(void)
   }
   st += "</ol>";
   delay(100);
-  WiFi.softAP("WifiLightController" + localUID, "");
+  WiFi.softAP(String("WifiLightController") + localUID, "");
   Serial.println("softap");
   launchWeb();
   Serial.println("over");
@@ -386,7 +403,7 @@ void createWebServer()
     server.on("/", []() {
  
       IPAddress ip = WiFi.softAPIP();
-      String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+      String ipStr = String(ip[0]) + String('.') + String(ip[1]) + String('.') + String(ip[2]) + String('.') + String(ip[3]);
       content = "<!DOCTYPE HTML>\r\n<html>Hello from ESP8266 at ";
       content += "<form action=\"/scan\" method=\"POST\"><input type=\"submit\" value=\"scan\"></form>";
       content += ipStr;
@@ -401,7 +418,7 @@ void createWebServer()
     server.on("/scan", []() {
       //setupAP();
       IPAddress ip = WiFi.softAPIP();
-      String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+      String ipStr = String(ip[0]) + String('.') + String(ip[1]) + String('.') + String(ip[2]) + String('.') + String(ip[3]);
  
       content = "<!DOCTYPE HTML>\r\n<html>go back";
       server.send(200, "text/html", content);
@@ -421,14 +438,14 @@ void createWebServer()
         Serial.println("");
  
         Serial.println("writing eeprom ssid:");
-        for (int i = 0; i < qsid.length(); ++i)
+        for (u_int i = 0; i < qsid.length(); ++i)
         {
           EEPROM.write(i, qsid[i]);
           Serial.print("Wrote: ");
           Serial.println(qsid[i]);
         }
         Serial.println("writing eeprom pass:");
-        for (int i = 0; i < qpass.length(); ++i)
+        for (u_int i = 0; i < qpass.length(); ++i)
         {
           EEPROM.write(32 + i, qpass[i]);
           Serial.print("Wrote: ");
@@ -457,30 +474,25 @@ void updateCloud(bool forceUpdate = false)
     {
       Serial.println("database query began");
     }      
-    update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
-    state = Firebase.RTDB.getBool(&fbdo, statePath) ? fbdo.to<bool>() : false;    
+    update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.boolData() : false;
+    state = Firebase.RTDB.getBool(&fbdo, statePath) ? fbdo.boolData() : false;    
     if(update || forceUpdate)
     {
-       
-        Firebase.getBool(fbdo, waveModePath, &waveMode);
-        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
 
-        Firebase.getFloat(fbdo, speedPath, &speed);
-        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+        waveMode = Firebase.RTDB.getBool(&fbdo, waveModePath) ? fbdo.boolData() : false;
+
+        speed = Firebase.RTDB.getFloat(&fbdo, speedPath) ? fbdo.floatData() : 0;
         
         lastNumColors = numColors;
 
-        Firebase.getInt(fbdo, colorLengthPath, &numColors);
-        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+        numColors = Firebase.RTDB.getInt(&fbdo, colorLengthPath) ? fbdo.intData() : 1;
 
-        Firebase.getInt(fbdo, mirrorIndexPath, &mirrorIndex);
-        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+        mirrorIndex = Firebase.RTDB.getInt(&fbdo, mirrorIndexPath) ? fbdo.intData() : 0;
 
 
         // numColors = Firebase.getInt(fbdo, colorLengthPath);
 
-        Firebase.getInt(fbdo, lightLengthPath, &numPixelsReal);
-        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+        numPixelsReal = Firebase.RTDB.getInt(&fbdo, lightLengthPath) ? fbdo.intData() : 1;
 
         // numPixelsReal = Firebase.getInt(fbdo, lightLengthPath);
         pixels.updateLength(numPixelsReal);
@@ -501,24 +513,21 @@ void updateCloud(bool forceUpdate = false)
             Serial.print("path: ");
             Serial.println(path);
           }
-          Firebase.getInt(fbdo, path+"r/", &r);
-          update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+          r = Firebase.RTDB.getInt(&fbdo, path+"r/") ? fbdo.intData() : 0;
 
           if(DEBUG)
           {
             Serial.print("r: ");
             Serial.println(r);
           }
-          Firebase.getInt(fbdo, path+"g/", &g);
-          update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+          g = Firebase.RTDB.getInt(&fbdo, path+"g/") ? fbdo.intData() : 0;
 
           if(DEBUG)
           {
             Serial.print("g: ");
             Serial.println(g);
           }
-          Firebase.getInt(fbdo, path+"b/", &b);
-          update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+          b = Firebase.RTDB.getInt(&fbdo, path+"b/") ? fbdo.intData() : 0;
 
           if(DEBUG)
           {
@@ -530,8 +539,8 @@ void updateCloud(bool forceUpdate = false)
           // b = Firebase.getInt(fbdo, path+"b/");
           colorList[counter] = pixels.Color(r, g, b);
         }
-        Firebase.setInt(fbdo, updatePath, false);
-        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+        Firebase.RTDB.setBool(&fbdo, updatePath, false);
+//           update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
 
     }
     if(DEBUG)
@@ -553,27 +562,24 @@ void updateCloud(bool forceUpdate = false)
 
 void updatePaths()
 {
-  tempPath = ("arduinoUIDs/" + localUID);
+  tempPath = (String("arduinoUIDs/") + localUID);
   tempPath += "/associatedUID";
-  if(!(Firebase.getString(fbdo, tempPath, &UserUID)))
-  update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
-
+  if(!(Firebase.RTDB.getString(&fbdo, tempPath)))    //, &UserUID
+//   update = Firebase.RTDB.getBool(&fbdo, tempPath) ? fbdo.to<bool>() : false;
   {
-    Firebase.setString(fbdo, tempPath, "unclaimed");
-    update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
-
+    Firebase.RTDB.setString(&fbdo, tempPath, "unclaimed");
   }
+  UserUID = Firebase.RTDB.getString(&fbdo, tempPath) ? fbdo.stringData() : "unclaimed";
   while(UserUID.equals("unclaimed"))
     {
       delay(20000);
-      Firebase.getString(fbdo, tempPath, &UserUID);
-      update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+      UserUID = Firebase.RTDB.getString(&fbdo, tempPath) ? fbdo.stringData() : "unclaimed";
 
     }
-  tempPath = ("arduinoUIDs/" + localUID);
+  tempPath = (String("arduinoUIDs/") + localUID);
   tempPath += "/userSpecificID";
-  Firebase.getInt(fbdo, (tempPath, &id));
-  update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
+  id = Firebase.RTDB.getInt(&fbdo, tempPath) ? fbdo.intData() : -1;
   
   basePath = "users/" + UserUID;
   basePath += "/Arduinos/";
@@ -588,3 +594,4 @@ void updatePaths()
   waveModePath = basePath + "/waveMode";
   return;
 }
+
