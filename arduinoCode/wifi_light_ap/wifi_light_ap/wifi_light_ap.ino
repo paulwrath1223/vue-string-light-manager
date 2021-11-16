@@ -20,7 +20,7 @@ unsigned long dataMillis = 0;
 //Variables
 int i = 0;
 int statusCode;
-const char* ssid = "Wifi Light Controller";
+const char* ssid = "Wifi";
 const char* passphrase = "password";
 String st;
 String content;
@@ -364,7 +364,7 @@ void setupAP(void)
   }
   st += "</ol>";
   delay(100);
-  WiFi.softAP("how2electronics", "");
+  WiFi.softAP("WifiLightController" + localUID, "");
   Serial.println("softap");
   launchWeb();
   Serial.println("over");
