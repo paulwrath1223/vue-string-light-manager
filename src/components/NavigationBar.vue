@@ -46,8 +46,12 @@
         </div>
       </div>
     </nav>
-    <ArduinoProperties v-show="showArduinoProperties" ref = "arduinoProperties"/>
-    <linkArduino v-show="!showArduinoProperties" ref = "linkRef"/>
+    <div v-show="showArduinoProperties">
+      <ArduinoProperties ref = "arduinoProperties"/>
+    </div>
+    <div v-show="showLink">
+      <linkArduino ref = "linkRef"/>
+    </div>
   </div>
 </template>
 
@@ -86,7 +90,10 @@ export default {
     //   }
     // },
     showArduinoProperties() {
-      return !this.linkMode
+      return !this.linkMode;
+    },
+    showLink(){
+      return this.linkMode;
     }
 
     // logInPromote(){

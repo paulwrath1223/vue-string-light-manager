@@ -257,6 +257,7 @@ async function getAttribute(path, absolute = false) {
     return tempResult;
 }
 
+
 export async function downloadAllArds()
 {
     await verifyUser();
@@ -324,6 +325,28 @@ export function getUID()
 
 export async function getOwnerOf(UID)
 {
+    console.log("function: getOwnerOf");
+    await verifyUser();
+    console.log("user verified");
     const uidPath = "arduinoUIDs/" + UID + "/associatedUID";
-    return(await getAttribute(uidPath, true));
+    console.log("path sent to {getAttribute}: " + uidPath);
+    const owner = await getAttribute(uidPath, true);
+    console.log("result: " + owner);
+    return owner;
+}
+
+export async function changeID(arduinoUID, newID)
+{
+    await verifyUser();
+    const db = getDatabase(app);
+    const uidPath = "arduinoUIDs/" + arduinoUID + "/userSpecificID";
+    await set(ref(db, uidPath), newID);
+}
+
+export async function setArduinoOwner(arduinoUID, newOwnerUID)
+{
+    await verifyUser();
+    const db = getDatabase(app);
+    const uidPath = "arduinoUIDs/" + arduinoUID + "/associatedUID";
+    await set(ref(db, uidPath), newOwnerUID);
 }
