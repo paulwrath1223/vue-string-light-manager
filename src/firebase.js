@@ -325,13 +325,9 @@ export function getUID()
 
 export async function getOwnerOf(UID)
 {
-    console.log("function: getOwnerOf");
     await verifyUser();
-    console.log("user verified");
     const uidPath = "arduinoUIDs/" + UID + "/associatedUID";
-    console.log("path sent to {getAttribute}: " + uidPath);
     const owner = await getAttribute(uidPath, true);
-    console.log("result: " + owner);
     return owner;
 }
 
@@ -345,8 +341,17 @@ export async function changeID(arduinoUID, newID)
 
 export async function setArduinoOwner(arduinoUID, newOwnerUID)
 {
+    console.log("setArduinoOwner(" + arduinoUID + ", " + newOwnerUID + "): ");
     await verifyUser();
     const db = getDatabase(app);
     const uidPath = "arduinoUIDs/" + arduinoUID + "/associatedUID";
-    await set(ref(db, uidPath), newOwnerUID);
+    console.log("setting path \"" + uidPath + "\" to " + newOwnerUID + "result: ");
+    console.log(await set(ref(db, uidPath), newOwnerUID));
+}
+export async function getArduinoUserID(UID)
+{
+    await verifyUser();
+    const uidPath = "arduinoUIDs/" + UID + "/userSpecificID";
+    const AID = await getAttribute(uidPath, true);
+    return AID;
 }

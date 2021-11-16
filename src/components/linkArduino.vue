@@ -21,7 +21,7 @@
 
 
       <div>
-        <button class="btn btn-danger" id="claim" @click="claimButton" :disabled="!arduinoOwner">Claim controller</button>
+        <button class="btn btn-danger" id="claim" @click="claimButton" :disabled="!claimable">Claim controller</button>
         <button class="btn btn-danger" id="unclaim" @click="unclaimButton" :disabled="!arduinoOwner">Remove claim</button>
       </div>
     </form>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import {changeID, getOwnerOf, getUID, setArduinoOwner} from "@/firebase.js"
+import {changeID, getArduinoUserID, getOwnerOf, getUID, setArduinoOwner} from "@/firebase.js"
 export default {
   name: "linkArduino",
   data(){
@@ -38,7 +38,8 @@ export default {
       ID: -1,
       arduinoUID: null,
       arduinoOwner: false,
-      currentArdStatus: "no UID"
+      currentArdStatus: "enter UID",
+      claimable: false
 
     }
   },
@@ -52,37 +53,45 @@ export default {
       {
         this.currentArdStatus = "You are the owner of this controller.";
         this.arduinoOwner = true;
+        this.ID = await getArduinoUserID(this.arduinoUID)
+        this.claimable = false;
       }
       else if (tempOwner === "unclaimed")
       {
         this.currentArdStatus = "This controller is unclaimed.";
         this.arduinoOwner = false;
+        this.claimable = true;
       }
       else if (tempOwner != null)
       {
         this.currentArdStatus = "This controller has been claimed by a different user.";
         this.arduinoOwner = false;
+        this.claimable = false;
       }
       else
       {
         this.currentArdStatus = "Controller not found. Please configure the controller first.";
         this.arduinoOwner = false;
+        this.claimable = false;
       }
 
     },
-    claimButton()
+    async claimButton()
     {
-      if(this.arduinoUID === "unclaimed")
+      if(await getOwnerOf(this.arduinoUID) === "unclaimed")
       {
-        setArduinoOwner(this.arduinoUID, getUID());
+        await setArduinoOwner(this.arduinoUID, getUID());
       }
+      this.restartReminder();
+      await this.updateArduinoUID();
     },
-    unclaimButton()
+    async unclaimButton()
     {
-      if(this.arduinoUID === getUID())
+      if(this.arduinoOwner)
       {
-        setArduinoOwner(this.arduinoUID, "unclaimed");
+        await setArduinoOwner(this.arduinoUID, "unclaimed");
       }
+      await this.updateArduinoUID();
     },
     updateID()
     {
@@ -91,6 +100,11 @@ export default {
           changeID(this.arduinoUID, (Math.round(this.ID)));
         }
       }
+      this.restartReminder();
+    },
+    restartReminder()
+    {
+      alert("Restart (unplug and replug) controller for the changes to take effect")
     }
 
   }

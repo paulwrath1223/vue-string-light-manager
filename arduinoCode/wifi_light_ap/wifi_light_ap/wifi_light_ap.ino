@@ -180,7 +180,7 @@ void setup()
   }
   Firebase.begin(&config, &auth);
 
-  updatePaths()
+  updatePaths();
 
   updateCloud(true);
  
