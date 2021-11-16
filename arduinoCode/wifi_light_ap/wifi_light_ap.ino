@@ -90,6 +90,7 @@ String updatePath;
 String statePath;
 String mirrorIndexPath;
 String waveModePath;
+String tempUUID;
 
 int waveOffset = 0;
 
@@ -568,16 +569,27 @@ void updatePaths()
   }
   tempPath = (String("arduinoUIDs/") + localUID);
   tempPath += "/associatedUID";
-  if(!(Firebase.RTDB.getString(&fbdo, tempPath)))    //, &UserUID
-//   update = Firebase.RTDB.getBool(&fbdo, tempPath) ? fbdo.to<bool>() : false;
+  Firebase.RTDB.getString(&fbdo, tempPath);
+  tempUUID = fbdo.stringData();
+  if(DEBUG)
   {
-    Firebase.RTDB.setString(&fbdo, tempPath, "unclaimed");
+    Serial.println("UUID from bd: " + tempUUID);
   }
-  UserUID = Firebase.RTDB.getString(&fbdo, tempPath) ? fbdo.stringData() : "unclaimed";
+  if(tempUUID.equals(""))    //, &UserUID
+  {
+    if(DEBUG)
+    {
+      Serial.println("no uid in database");
+    }
+    Firebase.RTDB.setString(&fbdo, tempPath, String("unclaimed"));
+    tempUUID = "unclaimed";
+  }
+  UserUID = tempUUID;
   while(UserUID.equals("unclaimed"))
     {
       delay(20000);
       UserUID = Firebase.RTDB.getString(&fbdo, tempPath) ? fbdo.stringData() : "unclaimed";
+      // consider adding "wait for claim" light animation
 
     }
   tempPath = (String("arduinoUIDs/") + localUID);
@@ -629,7 +641,7 @@ numPixels according to library: 0
 mirrorIndex: 0
 
 
-WITH NEW PRINT LINES: 
+WITH NEW PRINT LINES:  (erase all flash)
 ets Jan 8 2013,rst cause:2, boot mode:(3,2)
 load 0x4010f000, len 3460, room 16
 tail 4
@@ -639,4 +651,6 @@ tail 4
 chksum 0xc9
 csum 0xc9v0008aab0
 ~ld
+
+basePath: users/null/Arduinos/0
 */
