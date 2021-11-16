@@ -463,18 +463,24 @@ void updateCloud(bool forceUpdate = false)
     {
        
         Firebase.getBool(fbdo, waveModePath, &waveMode);
+        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
 
         Firebase.getFloat(fbdo, speedPath, &speed);
+        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+        
         lastNumColors = numColors;
 
         Firebase.getInt(fbdo, colorLengthPath, &numColors);
+        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
 
         Firebase.getInt(fbdo, mirrorIndexPath, &mirrorIndex);
+        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
 
 
         // numColors = Firebase.getInt(fbdo, colorLengthPath);
 
         Firebase.getInt(fbdo, lightLengthPath, &numPixelsReal);
+        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
 
         // numPixelsReal = Firebase.getInt(fbdo, lightLengthPath);
         pixels.updateLength(numPixelsReal);
@@ -496,18 +502,24 @@ void updateCloud(bool forceUpdate = false)
             Serial.println(path);
           }
           Firebase.getInt(fbdo, path+"r/", &r);
+          update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
           if(DEBUG)
           {
             Serial.print("r: ");
             Serial.println(r);
           }
           Firebase.getInt(fbdo, path+"g/", &g);
+          update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
           if(DEBUG)
           {
             Serial.print("g: ");
             Serial.println(g);
           }
           Firebase.getInt(fbdo, path+"b/", &b);
+          update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
           if(DEBUG)
           {
             Serial.print("b: ");
@@ -519,6 +531,8 @@ void updateCloud(bool forceUpdate = false)
           colorList[counter] = pixels.Color(r, g, b);
         }
         Firebase.setInt(fbdo, updatePath, false);
+        update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
     }
     if(DEBUG)
     {
@@ -542,17 +556,25 @@ void updatePaths()
   tempPath = ("arduinoUIDs/" + localUID);
   tempPath += "/associatedUID";
   if(!(Firebase.getString(fbdo, tempPath, &UserUID)))
+  update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
   {
     Firebase.setString(fbdo, tempPath, "unclaimed");
+    update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
   }
   while(UserUID.equals("unclaimed"))
     {
       delay(20000);
       Firebase.getString(fbdo, tempPath, &UserUID);
+      update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+
     }
   tempPath = ("arduinoUIDs/" + localUID);
   tempPath += "/userSpecificID";
   Firebase.getInt(fbdo, (tempPath, &id));
+  update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+  
   basePath = "users/" + UserUID;
   basePath += "/Arduinos/";
   basePath += id;
