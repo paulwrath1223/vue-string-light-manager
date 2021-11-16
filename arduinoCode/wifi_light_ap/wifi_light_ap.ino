@@ -562,6 +562,10 @@ void updateCloud(bool forceUpdate = false)
 
 void updatePaths()
 {
+  if(DEBUG)
+  {
+    Serial.println("function: update paths");
+  }
   tempPath = (String("arduinoUIDs/") + localUID);
   tempPath += "/associatedUID";
   if(!(Firebase.RTDB.getString(&fbdo, tempPath)))    //, &UserUID
@@ -592,6 +596,12 @@ void updatePaths()
   statePath = basePath + "/state";
   mirrorIndexPath = basePath + "/mirrorIndex";
   waveModePath = basePath + "/waveMode";
+  if(DEBUG)
+  {
+    Serial.println("\n update paths result: \n");
+    Serial.print("basePath: ");
+    Serial.println(basePath);
+  }
   return;
 }
 
@@ -617,4 +627,16 @@ numColors: 0
 numPixelsReal: 0
 numPixels according to library: 0
 mirrorIndex: 0
+
+
+WITH NEW PRINT LINES: 
+ets Jan 8 2013,rst cause:2, boot mode:(3,2)
+load 0x4010f000, len 3460, room 16
+tail 4
+chksum 0xcc
+load 0x3fff20b8, len 40, room 4
+tail 4
+chksum 0xc9
+csum 0xc9v0008aab0
+~ld
 */
