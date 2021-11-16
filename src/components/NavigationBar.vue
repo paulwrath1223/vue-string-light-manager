@@ -27,7 +27,8 @@
               <a class="nav-link"  @click="deleteArduino" :class="{disabled: !user.loggedIn}" href="#">Delete</a>
             </li>
             <li class="nav-item" v-show="user.loggedIn">
-              <a class="nav-link"  @click="claimUID" :class="{disabled: !user.loggedIn}" href="#">{{linkMode ? "Configure" : "Add controller"}}</a>
+              <a class="nav-link"  @click="claimUID" :class="{disabled: !user.loggedIn}" href="#">
+                {{linkMode ? "Configure" : "Add controller"}}</a>
             </li>
             <li class="nav-item" v-show="!user.loggedIn">
               <a class="nav-link"  @click="sign" href="#">sign in</a>
@@ -46,6 +47,9 @@
         </div>
       </div>
     </nav>
+    <h1>{{linkMode ? "Add controller" : "Configure"}}</h1>
+    <hr>
+
     <div v-show="showArduinoProperties">
       <ArduinoProperties ref = "arduinoProperties"/>
     </div>

@@ -15,7 +15,7 @@
       <div class="input-group mb-3">
         <span class="input-group-text">Assign ID: </span>
         <input type="number" class="form-control" placeholder="ID"
-               v-model="ID" :disabled="!arduinoOwner" >
+               v-model="ID">
         <button class="btn btn-primary" id="changeIdButton" @click="updateID" :disabled="!arduinoOwner">set</button>
       </div>
 
@@ -35,7 +35,7 @@ export default {
   name: "linkArduino",
   data(){
     return{
-      ID: -1,
+      ID: null,
       arduinoUID: null,
       arduinoOwner: false,
       currentArdStatus: "enter UID",
@@ -70,7 +70,7 @@ export default {
       }
       else
       {
-        this.currentArdStatus = "Controller not found. Please configure the controller first.";
+        this.currentArdStatus = "Controller not found. Please configure the wifi on the controller first.";
         this.arduinoOwner = false;
         this.claimable = false;
       }
@@ -78,12 +78,17 @@ export default {
     },
     async claimButton()
     {
-      if(await getOwnerOf(this.arduinoUID) === "unclaimed")
-      {
-        await setArduinoOwner(this.arduinoUID, getUID());
+      //TODO: make sure ID is not taken, and populate the lighting information
+      if(this.ID > 0 && this.ID != null) {
+        if (await getOwnerOf(this.arduinoUID) === "unclaimed") {
+          await setArduinoOwner(this.arduinoUID, getUID());
+        }
+        this.restartReminder();
+        await this.updateArduinoUID();
       }
-      this.restartReminder();
-      await this.updateArduinoUID();
+      else{
+        alert("please select an ID before claiming");
+      }
     },
     async unclaimButton()
     {
