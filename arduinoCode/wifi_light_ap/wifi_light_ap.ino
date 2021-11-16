@@ -575,7 +575,7 @@ void updatePaths()
   {
     Serial.println("UUID from bd: " + tempUUID);
   }
-  if(tempUUID.equals(""))    //, &UserUID
+  if(tempUUID.equals("null"))    //, &UserUID
   {
     if(DEBUG)
     {
