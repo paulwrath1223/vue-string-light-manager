@@ -50,7 +50,7 @@ void launchWeb(void);
 void setupAP(void);
 void updateCloud(boolean);
 
-#define localUID "661195AIH780"  // Has concat issues on lines 377, 548, 562.    (error: invalid operands of types 'const char [13]' and 'const char [13]' to binary 'operator+')
+#define localUID "661195AIH780"  
 
 String UserUID = "";
 int id = 0;
@@ -595,3 +595,26 @@ void updatePaths()
   return;
 }
 
+
+
+
+/*
+Waiting.
+Firebase Client v2.6.4
+database query began
+begining color query: 
+numColors: 0
+database query done :
+speed: 0.00
+numColors: 0
+numPixelsReal: 0
+numPixels according to library: 0
+mirrorIndex: 0
+database query began
+database query done :
+speed: 0.00
+numColors: 0
+numPixelsReal: 0
+numPixels according to library: 0
+mirrorIndex: 0
+*/
