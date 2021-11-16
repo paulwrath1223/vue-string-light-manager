@@ -157,10 +157,6 @@ void setup()
   if (testWifi())
   {
     Serial.println("Succesfully Connected!!!");
-    Firebase.begin(&config, &auth);
-
-    updateCloud(true);
-    return;
   }
   else
   {
@@ -168,6 +164,7 @@ void setup()
     launchWeb();
     setupAP();// Setup HotSpot
   }
+
  
   Serial.println();
   Serial.println("Waiting.");
@@ -178,6 +175,7 @@ void setup()
     delay(100);
     server.handleClient();
   }
+
   Firebase.begin(&config, &auth);
 
   updatePaths();
