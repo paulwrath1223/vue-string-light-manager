@@ -2,7 +2,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
-#include <FirebaseESP8266.h>
+#include <Firebase_ESP_Client.h>
 #include <Adafruit_NeoPixel.h>
 #include <addons/TokenHelper.h>
 #include <addons/RTDBHelper.h>
@@ -15,7 +15,7 @@ FirebaseConfig config;
 
 unsigned long dataMillis = 0;
 
-#define DEBUG false
+#define DEBUG true
 
 //Variables
 int i = 0;
@@ -64,6 +64,7 @@ int currentIndex;
 bool waveMode = false;
 
 String path;
+String tempPath;
 String speedPath;
 String lightLengthPath;
 String colorLengthPath;
@@ -100,13 +101,14 @@ void setup()
   colorPath = basePath+"/colors/";
   statePath = basePath + "/state";
   mirrorIndexPath = basePath + "/mirrorIndex";
-  waveModePath = basepath + "/waveMode";
+  waveModePath = basePath + "/waveMode";
  
 
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   pixels.clear();
   pixels.show(); // Initialize all pixels to 'off'
   Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
+
   Serial.println();
   Serial.println("Disconnecting previously connected WiFi");
   WiFi.disconnect();
@@ -117,19 +119,8 @@ void setup()
   Serial.println();
   Serial.println("Startup");
 
-  config.database_url = DATABASE_URL;
-  config.signer.tokens.legacy_token = DATABASE_SECRET;
 
-  auth.user.email = USER_EMAIL;
-  auth.user.password = USER_PASSWORD;
-
-  /* Assign the callback function for the long running token generation task */
-  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
-
-    /** Assign the maximum retry of token generation */
-  config.max_token_generation_retry = 20;
-
-  Firebase.reconnectWiFi(true);
+  
  
   //---------------------------------------- Read EEPROM for SSID and pass
   Serial.println("Reading EEPROM ssid");
@@ -176,6 +167,22 @@ void setup()
     server.handleClient();
   }
 
+  Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+
+  config.database_url = DATABASE_URL;
+  config.signer.tokens.legacy_token = DATABASE_SECRET;
+
+  auth.user.email = USER_EMAIL;
+  auth.user.password = USER_PASSWORD;
+
+  /* Assign the callback function for the long running token generation task */
+  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
+
+    /** Assign the maximum retry of token generation */
+  config.max_token_generation_retry = 20;
+
+  Firebase.reconnectWiFi(true);
+
   Firebase.begin(&config, &auth);
 
   updatePaths();
@@ -183,6 +190,9 @@ void setup()
   updateCloud(true);
  
 }
+
+
+
 void loop() {
   if ((WiFi.status() == WL_CONNECTED))
   {
@@ -447,8 +457,8 @@ void updateCloud(bool forceUpdate = false)
     {
       Serial.println("database query began");
     }      
-    Firebase.getBool(fbdo, updatePath, &update);
-    Firebase.getBool(fbdo, statePath, &state);
+    update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
+    state = Firebase.RTDB.getBool(&fbdo, statePath) ? fbdo.to<bool>() : false;    
     if(update || forceUpdate)
     {
        
@@ -529,17 +539,23 @@ void updateCloud(bool forceUpdate = false)
 
 void updatePaths()
 {
-  if(!Firebase.getString(fbdo, (("arduinoUIDs/" + localUID) + "/associatedUID", &UserUID))
+  tempPath = ("arduinoUIDs/" + localUID);
+  tempPath += "/associatedUID";
+  if(!(Firebase.getString(fbdo, tempPath, &UserUID)))
   {
-    Firebase.setString(fbdo, ("arduinoUIDs/" + localUID + "/associatedUID", "unclaimed");
+    Firebase.setString(fbdo, tempPath, "unclaimed");
   }
   while(UserUID.equals("unclaimed"))
     {
       delay(20000);
-      Firebase.getString(fbdo, (("arduinoUIDs/" + localUID) + "/associatedUID", &UserUID))
+      Firebase.getString(fbdo, tempPath, &UserUID);
     }
-  Firebase.getInt(fbdo, (("arduinoUIDs/" + localUID) + "/userSpecificID", &id);
-  basePath = "users/" + UserUID + "/Arduinos/" + id;
+  tempPath = ("arduinoUIDs/" + localUID);
+  tempPath += "/userSpecificID";
+  Firebase.getInt(fbdo, (tempPath, &id));
+  basePath = "users/" + UserUID;
+  basePath += "/Arduinos/";
+  basePath += id;
   updatePath = basePath + "/update";
   speedPath = basePath + "/speed";
   lightLengthPath = basePath + "/numLights";
@@ -547,6 +563,6 @@ void updatePaths()
   colorPath = basePath+"/colors/";
   statePath = basePath + "/state";
   mirrorIndexPath = basePath + "/mirrorIndex";
-  waveModePath = basepath + "/waveMode";
+  waveModePath = basePath + "/waveMode";
   return;
 }
