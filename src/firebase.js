@@ -4,24 +4,6 @@ import {app, auth, globalUser, uid} from "@/main.js";
 
 
 
-// {
-//         arduinoID: "1358",
-//         speed: 0.7,
-//         location: "Door Arch",
-//         lightsCount: 100,
-//         mirrorIndex: null,
-//         enabled: true,
-//         // updated: false,
-//         colors: [
-//             {color: "#FF0000", transitionFrames: 0},
-//             {color: "#00FF00", transitionFrames: 1},
-//             {color: "#0000FF", transitionFrames: 2},
-//             {color: "#000000", transitionFrames: 3}
-//         ]
-// }
-
-
-
 function arduinoToJson(arduinoNotJSON)
 {
 
@@ -45,7 +27,7 @@ function arduinoToJson(arduinoNotJSON)
         "colorLength": colorJSON.length,
         "colors": colorJSON,
         "keyFrameIndices": extractKeyFrameIndices(arduinoNotJSON),
-        "mirrorIndex" : (arduinoNotJSON.mirrorIndex == null) ? 0 : arduinoNotJSON.mirrorIndex,
+        "mirrorIndex" : arduinoNotJSON.waveMode ? ((arduinoNotJSON.mirrorIndex == null) ? 0 : arduinoNotJSON.mirrorIndex) : 0,
         "numLights" : arduinoNotJSON.lightsCount,
         "speed" : arduinoNotJSON.speed,
         "state" : arduinoNotJSON.enabled,
@@ -54,8 +36,6 @@ function arduinoToJson(arduinoNotJSON)
     });
 
 }
-
-
 
 function delay(delayInMs)
 {
@@ -88,9 +68,6 @@ export function getCurrentUserImage()
 
 export async function uploadArduino(arduino)
 {
-
-
-
     await verifyUser();
     while(globalUser === null)
     {
@@ -175,24 +152,31 @@ export async function downloadArduino(id)
     console.log("getting keyframe indices: ");
     let keyFrameIndices = await getAttribute("/Arduinos/" + id + "/keyFrameIndices");
     console.log(keyFrameIndices);
+    console.log("flag 5");
+    console.log("about to read length of " + keyFrameIndices);
+    arduinoOut.colors = extractNodes(keyFrameIndices, rawColors);
+    return arduinoOut;
+
+
+
+}
+
+function extractNodes(keyFrameIndices, rawColors)
+{
+    const rcl = rawColors.length;
+    const keyFrameIndicesLength = keyFrameIndices.length;
     let colorNodes = [];
-    console.log("flag 4");
     const templateColor = {
         "color": "#000000",
         "transitionFrames": 1
     };
     let tempColor = templateColor;
-    // let currentNodeNumFrames = 0;
-    console.log("flag 5");
     let currentNodeColor = {
         "r": 0,
         "g": 0,
         "b": 0
     };
-    console.log("about to read length of " + keyFrameIndices);
-    const keyFrameIndicesLength = keyFrameIndices.length;
     console.log("keyFrameIndicesLength: " + keyFrameIndicesLength);
-    const rcl = rawColors.length;
     for(
         let currentKeyFrameIndexIndex = 0;
         currentKeyFrameIndexIndex < keyFrameIndicesLength;
@@ -215,11 +199,8 @@ export async function downloadArduino(id)
     }
     console.log("colorNodes: ");
     console.log(colorNodes);
-    arduinoOut.colors = colorNodes;
-    return arduinoOut;
-
+    return(colorNodes);
 }
-
 
 function verifyUser()
 {
@@ -229,9 +210,8 @@ function verifyUser()
     }
 }
 
-
-
-async function getAttribute(path, absolute = false) {
+async function getAttribute(path, absolute = false)
+{
     await verifyUser();
     const db = getDatabase(app);
     let tempResult = undefined;
@@ -256,7 +236,6 @@ async function getAttribute(path, absolute = false) {
     off(tempRef);
     return tempResult;
 }
-
 
 export async function downloadAllArds()
 {
@@ -286,7 +265,8 @@ export async function downloadAllArds()
     return vardList;
 }
 
-function removeItemAll(arr, value) {
+function removeItemAll(arr, value)
+{
     console.log("function: removeItemAll\nRemoving " + value + "from:");
     console.log(arr);
     let newArr = [];
@@ -300,7 +280,6 @@ function removeItemAll(arr, value) {
     return newArr;
 }
 
-
 export async function deleteArduino(id)
 {
     await verifyUser();
@@ -313,11 +292,6 @@ export async function deleteArduino(id)
     return await remove(tempRef);
 }
 
-// export function getExistingIds()
-// {
-//     return(getAttribute("/usedIds"));
-// }
-//
 export function getUID()
 {
     return(uid);
@@ -327,8 +301,7 @@ export async function getOwnerOf(UID)
 {
     await verifyUser();
     const uidPath = "arduinoUIDs/" + UID + "/associatedUID";
-    const owner = await getAttribute(uidPath, true);
-    return owner;
+    return await getAttribute(uidPath, true);
 }
 
 export async function changeID(arduinoUID, newID)
@@ -348,10 +321,10 @@ export async function setArduinoOwner(arduinoUID, newOwnerUID)
     console.log("setting path \"" + uidPath + "\" to " + newOwnerUID + "result: ");
     console.log(await set(ref(db, uidPath), newOwnerUID));
 }
+
 export async function getArduinoUserID(UID)
 {
     await verifyUser();
     const uidPath = "arduinoUIDs/" + UID + "/userSpecificID";
-    const AID = await getAttribute(uidPath, true);
-    return AID;
+    return await getAttribute(uidPath, true);
 }

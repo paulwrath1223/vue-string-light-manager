@@ -33,6 +33,7 @@ FirebaseConfig config;
 unsigned long dataMillis = 0;
 
 #define DEBUG false
+#define HEAPDEBUG true
 
 //Variables
 int i = 0;
@@ -44,7 +45,7 @@ String content;
  
  //192.168.4.1
  
-//Function Decalration
+//Function Declaration
 bool testWifi(void);
 void launchWeb(void);
 void setupAP(void);
@@ -63,7 +64,7 @@ String basePath = "users/default/Arduinos/1/";
 
 Adafruit_NeoPixel pixels(500, PIN, NEO_RGB + NEO_KHZ400);
 
-float speed = 0; // 0 means solic color, 1 means wave.
+float speed = 0; // 0 means solid color, 1 means wave.
 int numPixelsReal = 500;
 int r;
 int g;
@@ -79,6 +80,9 @@ bool state = true; // false means the lights are off
 int numPastMirror;
 int currentIndex;
 bool waveMode = false;
+int memcurr;
+int memlast;
+bool tempBool;
 
 String path;
 String tempPath;
@@ -94,7 +98,7 @@ String tempUUID;
 
 int waveOffset = 0;
 
-uint32_t colorList[150];
+uint32_t colorList[300];
 uint32_t currentColor;
 
 
@@ -127,63 +131,9 @@ void setup()
   pixels.show(); // Initialize all pixels to 'off'
   Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
 
-  Serial.println();
-  Serial.println("Disconnecting previously connected WiFi");
-  WiFi.disconnect();
+
   EEPROM.begin(512); //Initialising EEPROM
-  delay(10);
-
-  Serial.println();
-  Serial.println();
-  Serial.println("Startup");
-
-
-  
- 
-  //---------------------------------------- Read EEPROM for SSID and pass
-  Serial.println("Reading EEPROM ssid");
- 
-  String esid;
-  for (int i = 0; i < 32; ++i)
-  {
-    esid += char(EEPROM.read(i));
-  }
-  Serial.println();
-  Serial.print("SSID: ");
-  Serial.println(esid);
-  Serial.println("Reading EEPROM pass");
- 
-  String epass = "";
-  for (int i = 32; i < 96; ++i)
-  {
-    epass += char(EEPROM.read(i));
-  }
-  Serial.print("PASS: ");
-  Serial.println(epass);
- 
- 
-  WiFi.begin(esid.c_str(), epass.c_str());
-  if (testWifi())
-  {
-    Serial.println("Succesfully Connected!!!");
-  }
-  else
-  {
-    Serial.println("Turning the HotSpot On");
-    launchWeb();
-    setupAP();// Setup HotSpot
-  }
-
- 
-  Serial.println();
-  Serial.println("Waiting.");
-  
-  while ((WiFi.status() != WL_CONNECTED))
-  {
-    Serial.print(".");
-    delay(100);
-    server.handleClient();
-  }
+  resetWifi();
 
   Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
 
@@ -212,6 +162,13 @@ void setup()
 
 
 void loop() {
+  if(HEAPDEBUG)
+  {
+    memcurr = ESP.getFreeHeap();
+    Serial.printf("FREEHeap: %d; DIFF %d\n", memcurr, memcurr - memlast);
+    memlast = memcurr;
+    // ESP.heap_caps_print_heap_info();
+  }
   if ((WiFi.status() == WL_CONNECTED))
   {
  
@@ -237,10 +194,19 @@ void loop() {
       waveOffset -= 1;    
     }
 
-    if( !(waveOffset < numColors && waveOffset > -numColors))  
+    // if( !(waveOffset < numColors && waveOffset > -numColors))  
+    // {
+    //   waveOffset = waveOffset % numColors;
+    // }
+    while(waveOffset <= (-numColors))
     {
-      waveOffset = 0;
+      waveOffset += numColors;
     }
+    while(waveOffset >= numColors)
+    {
+      waveOffset -= numColors;
+    }
+
     if(state)
     {
       if(mirrorIndex == 0 || !waveMode)
@@ -280,7 +246,7 @@ void loop() {
             else // current pixel is or is past the mirror index
             {
               numPastMirror = i-mirrorIndex;
-              unMirroredIndex = (mirrorIndex-abs(numPastMirror));
+              unMirroredIndex = (mirrorIndex - abs(numPastMirror));
               currentIndex = (unMirroredIndex + waveOffset);
               while(currentIndex < 0)
               {
@@ -294,7 +260,8 @@ void loop() {
                 Serial.print("setting mirrored pixel ");
                 Serial.print(i);
                 Serial.print(" to currentColor[");
-                Serial.println(currentIndex);
+                Serial.print(currentIndex);
+                Serial.print("]\n");
               }
             }
         }
@@ -310,7 +277,7 @@ void loop() {
   }
   else
   {
-    // reconnect
+    resetWifi();
   }
  
 }
@@ -321,7 +288,7 @@ bool testWifi(void)
 {
   int c = 0;
   Serial.println("Waiting for Wifi to connect");
-  while ( c < 20 ) {
+  while ( c < 60 ) {
     if (WiFi.status() == WL_CONNECTED)
     {
       return true;
@@ -495,14 +462,20 @@ void updateCloud(bool forceUpdate = false)
 
         numPixelsReal = Firebase.RTDB.getInt(&fbdo, lightLengthPath) ? fbdo.intData() : 1;
 
-        // numPixelsReal = Firebase.getInt(fbdo, lightLengthPath);
-        pixels.updateLength(numPixelsReal);
+        pixels.clear();
+        pixels.show(); // Initialize all pixels to 'off'
+
+  
+        if(numPixelsReal != pixels.numPixels())
+        {
+          pixels.updateLength(numPixelsReal);              // No longer used to avoid memory leaks
+        }
 
         pixels.clear();
         pixels.show(); // Initialize all pixels to 'off'
         if(DEBUG)
         {
-          Serial.print("begining color query: ");
+          Serial.print("beginning color query: ");
           Serial.print("numColors: ");
           Serial.println(numColors);
         }
@@ -570,7 +543,8 @@ void updatePaths()
   tempPath = (String("arduinoUIDs/") + localUID);
   tempPath += "/associatedUID";
   Firebase.RTDB.getString(&fbdo, tempPath);
-  tempUUID = fbdo.stringData().replace("\"", "");
+  tempUUID = fbdo.stringData();
+  tempUUID.replace("\"", "");
   if(DEBUG)
   {
     Serial.println("UUID from bd: " + tempUUID);
@@ -587,8 +561,11 @@ void updatePaths()
   UserUID = tempUUID;
   while(UserUID.equals("unclaimed"))
     {
-      delay(20000);
-      UserUID = Firebase.RTDB.getString(&fbdo, tempPath) ? (fbdo.stringData().replace("\"", "")) : "unclaimed";
+      delay(200);
+      tempBool = Firebase.RTDB.getString(&fbdo, tempPath);
+      tempUUID = fbdo.stringData();
+      tempUUID.replace("\"", "");
+      UserUID = tempBool ? tempUUID : "unclaimed";
       // consider adding "wait for claim" light animation
 
     }
@@ -620,13 +597,129 @@ void updatePaths()
 
 
 
+
+void resetWifi()
+{
+  Serial.println();
+  Serial.println("Disconnecting previously connected WiFi");
+  WiFi.disconnect();
+  delay(10);
+  Serial.println();
+  Serial.println();
+  Serial.println("Startup"); 
+  //---------------------------------------- Read EEPROM for SSID and pass
+  Serial.println("Reading EEPROM ssid");
+ 
+  String esid;
+  for (int i = 0; i < 32; ++i)
+  {
+    esid += char(EEPROM.read(i));
+  }
+  Serial.println();
+  Serial.print("SSID: ");
+  Serial.println(esid);
+  Serial.println("Reading EEPROM pass");
+  String epass = "";
+  for (int i = 32; i < 96; ++i)
+  {
+    epass += char(EEPROM.read(i));
+  }
+  Serial.print("PASS: ");
+  Serial.println(epass);
+  WiFi.begin(esid.c_str(), epass.c_str());
+  if (testWifi())
+  {
+    Serial.println("Succesfully Connected!!!");
+  }
+  else
+  {
+    Serial.println("Turning the HotSpot On");
+    launchWeb();
+    setupAP();// Setup HotSpot
+  }
+  Serial.println();
+  Serial.println("Waiting.");
+  
+  while ((WiFi.status() != WL_CONNECTED))
+  {
+    Serial.print(".");
+    delay(100);
+    server.handleClient();
+  }
+}
+
+
+
+
 /*
+
+Possible solutions:
+ -> I was facing this problem and it was fixed by changing Tools>Upload Speed to 115200.
+    And Flash Size to 4M(3M SPIFFS).
+
+ -> heap_caps_get_free_size(), heap_caps_print_heap_info()
+    (see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/heap_debug.html)
+
 AFTER ~1HR OF EXECUTING: 
-ets Jan 8 2013,rst cause:4, boot mode:(3,7)wdt resetload 0x4010f000, len 3460, room 16tail 4chksum 0xccload 0x3fff20b8, len 40, room 4tail 4chksum 0xc9csum 0xc9v0008a560~ldDisconnecting previously connected WiFi
+ets Jan 8 2013,rst cause:4, boot mode:(3,7)
+wdt reset
+load 0x4010f000, len 3460, room 16
+tail 4
+chksum 0xcc
+load 0x3fff20b8, len 40, room 4
+tail 4
+chksum 0xc9c
+sum 0xc9v0008a560
+~ldDisconnecting
 
-StartupReading EEPROM ssidSSID: WIFI910Reading EEPROM passPASS: 1cadenasWaiting for Wifi to connect********************Connect timed out, opening APTurning the HotSpot On
+previously connected WiFi
 
-Server startedscan done13 networks found1: WIFI910 (-72)*2: Victorian Guest (-80)*3: Eleven (-80)*4: Victorian Guest (-78)*5: Eleven (-78)*6: HVP_b82ca0e88aed-Pairing (-85)*7: Eleven (-86)*8: Burt Household (-86)*9: Grant School Car Pool (-80)*10: Victorian Guest (-84)*11: VALIS (-91)*12: HOME-5812 (-88)*13: WIFI910 (-68)*
+StartupReading EEPROM ssidSSID: WIFI910
+Reading EEPROM passPASS: {Password was correct}
+Waiting for Wifi to connect********************
+Connect timed out, opening AP
+Turning the HotSpot On
 
-softapLocal IP: (IP unset)SoftAP IP: 192.168.4.1Server startedoverWaiting.
+Server started
+scan done
+13 networks found
+1: WIFI910 (-72)*
+2: Victorian Guest (-80)*
+3: Eleven (-80)*
+4: Victorian Guest (-78)*
+5: Eleven (-78)*
+6: HVP_b82ca0e88aed-Pairing (-85)*
+7: Eleven (-86)*
+8: Burt Household (-86)*
+9: Grant School Car Pool (-80)*
+10: Victorian Guest (-84)*
+11: VALIS (-91)*
+12: HOME-5812 (-88)*
+13: WIFI910 (-68)*
+
+softapLocal IP: (IP unset)
+SoftAP IP: 192.168.4.1
+Server startedover
+Waiting.
+
+
+
+
+comp notes:
+
+In file included from c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src/wcs/esp8266/FB_TCP_Client.h:66,
+                 from c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src/common.h:45,
+                 from c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src/Utils.h:37,
+                 from c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src\signer\Signer.h:37,
+                 from c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src\signer\Signer.cpp:35:
+c:\users\paulw\documents\arduino\libraries\firebase_arduino_client_library_for_esp8266_and_esp32\src\json\firebasejson.h: In member function 'size_t FirebaseJsonArray::iteratorBegin(const char*)':
+c:\users\paulw\documents\arduino\libraries\firebase_arduino_client_library_for_esp8266_and_esp32\src\json\firebasejson.h:2510:38: warning: unused parameter 'data' [-Wunused-parameter]
+ 2510 |     size_t iteratorBegin(const char *data = NULL) { return mIteratorBegin(root); }
+      |                                      ^
+In file included from c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src\signer\Signer.h:37,
+                 from c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src\signer\Signer.cpp:35:
+c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src/Utils.h: In member function 'bool UtilsClass::waitIdle(int&)':
+c:\Users\paulw\Documents\Arduino\libraries\Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32\src/Utils.h:1849:24: warning: unused parameter 'httpCode' [-Wunused-parameter]
+ 1849 |     bool waitIdle(int &httpCode)
+      |                   ~~~~~^~~~~~~~
 */
