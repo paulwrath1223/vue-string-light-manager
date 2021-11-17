@@ -104,16 +104,22 @@ export default {
     },
     async claimButton()
     {
-      //TODO: make sure ID is not taken, and populate the lighting information
-      if(this.ID > 0 && this.ID != null) {
-        if (await getOwnerOf(this.arduinoUID) === "unclaimed") {
-          await setArduinoOwner(this.arduinoUID, getUID());
-        }
-        this.restartReminder();
-        await this.updateArduinoUID();
+      if(this.arduinoIDs.includes(this.id))
+      {
+        alert("this ID is already taken")
       }
-      else{
-        alert("please select an ID before claiming");
+      else {
+        //TODO: make sure ID is not taken, and populate the lighting information
+        if (this.ID > 0 && this.ID != null) {
+          if (await getOwnerOf(this.arduinoUID) === "unclaimed") {
+            await changeID(this.arduinoUID, (Math.round(this.ID)));
+            await setArduinoOwner(this.arduinoUID, getUID());
+          }
+          this.restartReminder();
+          await this.updateArduinoUID();
+        } else {
+          alert("please select an ID before claiming");
+        }
       }
     },
     async unclaimButton()
@@ -128,14 +134,16 @@ export default {
     {
       if(this.arduinoIDs.includes(this.id))
       {
-
+        alert("this ID is already taken")
       }
-      if(this.arduinoOwner) {
-        if (this.ID > 0) {
-          changeID(this.arduinoUID, (Math.round(this.ID)));
+      else{
+        if(this.arduinoOwner) {
+          if (this.ID > 0) {
+            changeID(this.arduinoUID, (Math.round(this.ID)));
+          }
         }
+        this.restartReminder();
       }
-      this.restartReminder();
     },
 
     restartReminder()

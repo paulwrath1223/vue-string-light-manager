@@ -27,8 +27,10 @@
               <a class="nav-link"  @click="deleteArduino" :class="{disabled: !user.loggedIn}" href="#">Delete</a>
             </li>
             <li class="nav-item" v-show="user.loggedIn">
-              <a class="nav-link"  @click="claimUID" :class="{disabled: !user.loggedIn}" href="#">
-                {{linkMode ? "Configure" : "Add controller"}}</a>
+              <a class="nav-link"  @click="claimUID(true)" :class="{disabled: linkMode}" href="#">Add controller</a>
+            </li>
+            <li class="nav-item" v-show="user.loggedIn">
+              <a class="nav-link"  @click="claimUID(false)" :class="{disabled: !linkMode}" href="#">Configure</a>
             </li>
             <li class="nav-item" v-show="!user.loggedIn">
               <a class="nav-link"  @click="sign" href="#">sign in</a>
@@ -47,7 +49,7 @@
         </div>
       </div>
     </nav>
-    <h1>{{linkMode ? "Add controller" : "Configure"}}</h1>
+    <h1>{{linkMode ? "Add controller" : "Configure Light Pattern"}}</h1>
     <hr>
 
     <div v-show="showArduinoProperties">
@@ -128,9 +130,9 @@ export default {
       console.log("this.userLoggedIn: " + (this.user.loggedIn));
       this.$store.commit('changeDatabase', await downloadAllArds());
     },
-    claimUID()
+    claimUID(temp)
     {
-      this.linkMode = !this.linkMode;
+      this.linkMode = temp;
     },
     async uploadArduino()
     {
