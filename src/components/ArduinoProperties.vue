@@ -90,7 +90,8 @@
       <div class="input-group mb-3">
         <span class="input-group-text">Mirror index: </span>
         <input type="number" class="form-control" placeholder="Mirror index" v-model="localMirrorIndex"
-               :disabled="formDisabled || !this.localMirrorEnabled || !this.waveMode" @change="UpdateMirrorIndex">
+               :disabled="formDisabled || !this.localMirrorEnabled || !this.waveMode"
+               @change="UpdateMirrorIndex">
         <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localMirrorIndex === mirrorIndex && currentID >= 0">
       </div>

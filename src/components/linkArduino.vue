@@ -43,6 +43,32 @@ export default {
 
     }
   },
+  computed: {
+    arduinoIDs: {
+      get() {
+        let ids = [];
+        for (let i = 0; i < this.$store.state.arduinoList.length; i++) {
+          console.log("new length of id list:");
+          console.log(ids.push(this.$store.state.arduinoList[i].arduinoID));
+        }
+
+        // const intIds = await getExistingIds();
+        // for(let id of intIds)
+        // {
+        //   ids.push(id.toString());
+        // }
+        console.log("ids list");
+        console.log(ids);
+        console.log("arduino list: ");
+        console.log(this.$store.state.arduinoList);
+
+        return ids;
+      },
+      set(value){
+        console.log("arduinoIdsList cannot be edited to: "+value)
+      },
+    }
+  },
   methods: {
     async updateArduinoUID(){
       console.log("function: updateArduinoUID");
@@ -100,6 +126,10 @@ export default {
     },
     updateID()
     {
+      if(this.arduinoIDs.includes(this.id))
+      {
+
+      }
       if(this.arduinoOwner) {
         if (this.ID > 0) {
           changeID(this.arduinoUID, (Math.round(this.ID)));
@@ -107,6 +137,7 @@ export default {
       }
       this.restartReminder();
     },
+
     restartReminder()
     {
       alert("Restart (unplug and replug) controller for the changes to take effect")
