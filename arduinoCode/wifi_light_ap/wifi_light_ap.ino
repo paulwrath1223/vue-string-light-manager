@@ -32,7 +32,7 @@ FirebaseConfig config;
 
 unsigned long dataMillis = 0;
 
-#define DEBUG true
+#define DEBUG false
 
 //Variables
 int i = 0;
@@ -570,7 +570,7 @@ void updatePaths()
   tempPath = (String("arduinoUIDs/") + localUID);
   tempPath += "/associatedUID";
   Firebase.RTDB.getString(&fbdo, tempPath);
-  tempUUID = fbdo.stringData();
+  tempUUID = fbdo.stringData().replace("\"", "");
   if(DEBUG)
   {
     Serial.println("UUID from bd: " + tempUUID);
@@ -588,7 +588,7 @@ void updatePaths()
   while(UserUID.equals("unclaimed"))
     {
       delay(20000);
-      UserUID = Firebase.RTDB.getString(&fbdo, tempPath) ? fbdo.stringData() : "unclaimed";
+      UserUID = Firebase.RTDB.getString(&fbdo, tempPath) ? (fbdo.stringData().replace("\"", "")) : "unclaimed";
       // consider adding "wait for claim" light animation
 
     }
@@ -621,36 +621,12 @@ void updatePaths()
 
 
 /*
-Waiting.
-Firebase Client v2.6.4
-database query began
-begining color query: 
-numColors: 0
-database query done :
-speed: 0.00
-numColors: 0
-numPixelsReal: 0
-numPixels according to library: 0
-mirrorIndex: 0
-database query began
-database query done :
-speed: 0.00
-numColors: 0
-numPixelsReal: 0
-numPixels according to library: 0
-mirrorIndex: 0
+AFTER ~1HR OF EXECUTING: 
+ets Jan 8 2013,rst cause:4, boot mode:(3,7)wdt resetload 0x4010f000, len 3460, room 16tail 4chksum 0xccload 0x3fff20b8, len 40, room 4tail 4chksum 0xc9csum 0xc9v0008a560~ldDisconnecting previously connected WiFi
 
+StartupReading EEPROM ssidSSID: WIFI910Reading EEPROM passPASS: 1cadenasWaiting for Wifi to connect********************Connect timed out, opening APTurning the HotSpot On
 
-WITH NEW PRINT LINES:  (erase all flash)
-ets Jan 8 2013,rst cause:2, boot mode:(3,2)
-load 0x4010f000, len 3460, room 16
-tail 4
-chksum 0xcc
-load 0x3fff20b8, len 40, room 4
-tail 4
-chksum 0xc9
-csum 0xc9v0008aab0
-~ld
+Server startedscan done13 networks found1: WIFI910 (-72)*2: Victorian Guest (-80)*3: Eleven (-80)*4: Victorian Guest (-78)*5: Eleven (-78)*6: HVP_b82ca0e88aed-Pairing (-85)*7: Eleven (-86)*8: Burt Household (-86)*9: Grant School Car Pool (-80)*10: Victorian Guest (-84)*11: VALIS (-91)*12: HOME-5812 (-88)*13: WIFI910 (-68)*
 
-basePath: users/null/Arduinos/0
+softapLocal IP: (IP unset)SoftAP IP: 192.168.4.1Server startedoverWaiting.
 */
