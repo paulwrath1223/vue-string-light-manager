@@ -114,6 +114,7 @@ export default {
           if (await getOwnerOf(this.arduinoUID) === "unclaimed") {
             await changeID(this.arduinoUID, (Math.round(this.ID)));
             await setArduinoOwner(this.arduinoUID, getUID());
+            await this.$store.commit('addArduino', this.ID);
           }
           this.restartReminder();
           await this.updateArduinoUID();
