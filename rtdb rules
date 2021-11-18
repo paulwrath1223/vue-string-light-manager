@@ -1,0 +1,30 @@
+New:
+
+{
+  "rules": {
+    "arduinoUIDs": {
+      "$auid": {
+        ".write": "$auid.associatedUID === auth.uid || $auid.associatedUID === 'unclaimed'",
+        ".read": "$auid.associatedUID === auth.uid || $auid.associatedUID === 'unclaimed' || auth.uid === 'wi9lgjiqfKUo9ChiCdJRLfAjvTZ2'"
+      }
+    },
+    "user": {
+      "$uid": {
+        ".write": "$uid === auth.uid || auth.uid === 'wi9lgjiqfKUo9ChiCdJRLfAjvTZ2'",
+        ".read": "$uid === auth.uid || auth.uid === 'wi9lgjiqfKUo9ChiCdJRLfAjvTZ2'"
+      }
+    }
+  }
+}
+
+ERROR MESSAGE:
+Simulation failed - Line 6: No such method/property 'associatedUID'.; Line 5: No such method/property 'associatedUID'.
+
+Old:
+
+{
+  "rules": {
+    ".write": "auth != null", //"$uid === auth.uid"
+    ".read": "auth != null"
+  }
+}
