@@ -32,6 +32,7 @@ function arduinoToJson(arduinoNotJSON)
         "speed" : arduinoNotJSON.speed,
         "state" : arduinoNotJSON.enabled,
         "waveMode" : arduinoNotJSON.waveMode,
+        "brightness" : arduinoNotJSON.brightness,
         "update" : true // ALWAYS TRUE
     });
 
@@ -147,6 +148,8 @@ export async function downloadArduino(id)
     arduinoOut.lightsCount = await getAttribute("/Arduinos/" + id + "/numLights");
     arduinoOut.location = await getAttribute("/Arduinos/" + id + "/Name");
     arduinoOut.enabled = await getAttribute("/Arduinos/" + id + "/state");
+    arduinoOut.waveMode = await getAttribute("/Arduinos/" + id + "/waveMode");
+    arduinoOut.brightness = await getAttribute("/Arduinos/" + id + "/brightness");
     console.log("flag 3");
     let rawColors = await getAttribute("/Arduinos/" + id + "/colors");
     console.log("getting keyframe indices: ");
@@ -156,9 +159,6 @@ export async function downloadArduino(id)
     console.log("about to read length of " + keyFrameIndices);
     arduinoOut.colors = extractNodes(keyFrameIndices, rawColors);
     return arduinoOut;
-
-
-
 }
 
 function extractNodes(keyFrameIndices, rawColors)
@@ -186,11 +186,14 @@ function extractNodes(keyFrameIndices, rawColors)
         let nextIndex = rcl;
         if((currentKeyFrameIndexIndex + 1) !== keyFrameIndicesLength)
         {
-            nextIndex = keyFrameIndices[currentKeyFrameIndexIndex + 1];
+            nextIndex = keyFrameIndices
+                [currentKeyFrameIndexIndex + 1];
         }
-        currentNodeColor = rawColors[keyFrameIndices[currentKeyFrameIndexIndex]];
+        currentNodeColor = rawColors
+            [keyFrameIndices[currentKeyFrameIndexIndex]];
         tempColor = templateColor;
-        tempColor.transitionFrames = nextIndex - keyFrameIndices[currentKeyFrameIndexIndex];
+        tempColor.transitionFrames = nextIndex - keyFrameIndices
+            [currentKeyFrameIndexIndex];
         tempColor.color = JSONtoHex(currentNodeColor);
         const finalNode = JSON.parse(JSON.stringify(tempColor));
         console.log("finalNode: ");

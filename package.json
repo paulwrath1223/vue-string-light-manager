@@ -12,6 +12,8 @@
     "core-js": "^3.6.5",
     "firebase": "^9.4.0",
     "vue": "^3.0.0",
+    "vue-slider-component": "^3.2.15",
+    "vue3-slider": "^1.6.7",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
