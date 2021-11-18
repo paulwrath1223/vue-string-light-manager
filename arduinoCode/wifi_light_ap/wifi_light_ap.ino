@@ -80,6 +80,7 @@ bool state = true; // false means the lights are off
 int numPastMirror;
 int currentIndex;
 bool waveMode = false;
+int brightness;
 int memcurr;
 int memlast;
 bool tempBool;
@@ -94,6 +95,7 @@ String updatePath;
 String statePath;
 String mirrorIndexPath;
 String waveModePath;
+String brightnessPath;
 String tempUUID;
 
 int waveOffset = 0;
@@ -115,17 +117,6 @@ ESP8266WebServer server(80);
  
 void setup()
 {
-
-  updatePath = basePath + "/update";
-  speedPath = basePath + "/speed";
-  lightLengthPath = basePath + "/numLights";
-  colorLengthPath = basePath + "/colorLength";
-  colorPath = basePath+"/colors/";
-  statePath = basePath + "/state";
-  mirrorIndexPath = basePath + "/mirrorIndex";
-  waveModePath = basePath + "/waveMode";
- 
-
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   pixels.clear();
   pixels.show(); // Initialize all pixels to 'off'
@@ -450,6 +441,8 @@ void updateCloud(bool forceUpdate = false)
         waveMode = Firebase.RTDB.getBool(&fbdo, waveModePath) ? fbdo.boolData() : false;
 
         speed = Firebase.RTDB.getFloat(&fbdo, speedPath) ? fbdo.floatData() : 0;
+
+        brightness = Firebase.RTDB.getInt(&fbdo, brightnessPath) ? fbdo.intData() : 255;
         
         lastNumColors = numColors;
 
@@ -468,7 +461,11 @@ void updateCloud(bool forceUpdate = false)
   
         if(numPixelsReal != pixels.numPixels())
         {
-          pixels.updateLength(numPixelsReal);              // No longer used to avoid memory leaks
+          pixels.updateLength(numPixelsReal);              // (No) longer used to avoid memory leaks
+        }
+        if(pixels.getBrightness() != brightness)
+        {
+          pixels.setBrightness(constrain(brightness, 0, 255));
         }
 
         pixels.clear();
@@ -585,6 +582,7 @@ void updatePaths()
   statePath = basePath + "/state";
   mirrorIndexPath = basePath + "/mirrorIndex";
   waveModePath = basePath + "/waveMode";
+  brightnessPath = basePath + "/brightness";
   if(DEBUG)
   {
     Serial.println("\n update paths result: \n");
