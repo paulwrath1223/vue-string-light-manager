@@ -34,7 +34,7 @@ FirebaseConfig config;
 unsigned long dataMillis = 0;
 
 #define DEBUG false
-#define HEAPDEBUG true
+#define HEAPDEBUG false
 
 //Variables
 int i = 0;
@@ -204,7 +204,10 @@ void loop() {
     {
       if(mirrorIndex == 0 || !waveMode)
       {
-        Serial.println("unmirrored");
+        if(DEBUG)
+        {
+          Serial.println("unmirrored");
+        }
         for(int i=0; i<numPixelsReal; i++)  // For each pixel...
         {
             if(errorStatus)

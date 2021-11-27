@@ -38,6 +38,9 @@ export default createStore({
     getEnabledByArduinoID(state, getters){
       return state.arduinoList[getters.getArduinoIndex].enabled
     },
+    getBrightnessByArduinoID(state, getters){
+      return state.arduinoList[getters.getArduinoIndex].brightness
+    },
     getMirrorIndex: (state, getters) => {
       return state.arduinoList[getters.getArduinoIndex].mirrorIndex
     },
@@ -58,6 +61,7 @@ export default createStore({
         mirrorIndex: 0,
         enabled: false,
         waveMode: true,
+        brightness: 100,
         // updated: false,
         colors: [
           {color: "#ffffff", transitionFrames: 1},
@@ -80,6 +84,10 @@ export default createStore({
     changeWaveModeOfCurrentArduinoID(state, arduino){
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID));
       state.arduinoList[index].waveMode = arduino.waveMode;
+    },
+    changeBrightnessOfCurrentArduinoID(state, arduino){
+      let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID));
+      state.arduinoList[index].brightness = arduino.brightness;
     },
     changeLocationOfCurrentArduinoID(state, arduino){
       let index = state.arduinoList.indexOf(state.arduinoList.find(arduino => arduino.arduinoID === state.currentArduinoID))

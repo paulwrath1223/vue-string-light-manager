@@ -68,6 +68,18 @@
              v-show="localSpeed === speed && currentID >= 0">
       </div>
 
+      <!--brightness slider-->
+      <div class="input-group mb-3" >
+        <span class="input-group-text">Brightness:&nbsp{{((brightness > 99) ? "" : "&nbsp&nbsp") + ((brightness>9) ? "" : "&nbsp&nbsp")}}
+          {{brightness}}</span>
+        <div id="brightnessSlider">
+        <vue3-slider v-model="localBrightness"
+                     :height= 30 color="#AEAEAE" track-color="#3f3f3f" :max=255 :min=1
+                     @drag-end="updateBrightness" v-show="!formDisabled"/>
+        </div>
+      </div>
+
+
       <!--wave enable switch-->
       <div class="form-check form-switch mx-auto" style="width: 200px">
         <input class="form-check-input" type="checkbox" @click="waveModeSwitchToggled"
@@ -95,7 +107,6 @@
         <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localMirrorIndex === mirrorIndex && currentID >= 0">
       </div>
-      <timePicker v-show="currentID >= 0" ref = "timePicker"/>
     </form>
 
   <colorsPanel v-show="colorPanelVisible" ref = "colorPanel"/>
@@ -108,12 +119,14 @@
 import {deleteArduino, downloadAllArds, uploadArduino} from "@/firebase";
 import ColorsPanel from "@/components/ColorsPanel";
 import timePicker from "@/components/timePicker";
+import slider from "vue3-slider"
 
 export default {
   name: "ArduinoProperties",
   components:
       {
         ColorsPanel,
+        "vue3-slider": slider
         timePicker
       },
   data(){
@@ -126,7 +139,8 @@ export default {
       localMirrorIndex: null,
       localMirrorEnabled: false,
       localLastMirror: 0,
-      localWaveMode: true
+      localWaveMode: true,
+      localBrightness: 50
       //location: ""
     }
   },
@@ -180,6 +194,14 @@ export default {
       },
       set(value){
         this.$store.commit('changeCurrentArduinoID', {id: value})
+      }
+    },
+    brightness: {
+      get(){
+        return (this.$store.state.currentArduinoID < 0) ? 0 : this.$store.getters.getBrightnessByArduinoID;
+      },
+      set(val){
+        this.$store.commit('changeBrightnessOfCurrentArduinoID', {brightness: val});
       }
     },
     formDisabled: {
@@ -292,6 +314,12 @@ export default {
       console.log("uploading id " + IDToUpload + ":");
       console.log(vArdToUpload);
       await uploadArduino(vArdToUpload);
+    },
+    updateBrightness(){
+      console.log("function: updateBrightness()\nchanging to " + this.localBrightness);
+      const temp = (255-this.localBrightness)
+      if(temp < 0)
+      this.brightness = this.localBrightness;
     },
     async IDChosen(event, idName){
       console.log("ID chosen");
@@ -421,8 +449,15 @@ export default {
 
 }
 .checkmarkImg{
-  padding: 7px;
+  padding: 2%;
   width: 8%;
+
+}
+
+#brightnessSlider{
+  padding-left: 5%;
+  padding-right: 1%;
+  width: 70%;
 }
 
 </style>
