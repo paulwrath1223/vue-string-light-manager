@@ -95,6 +95,7 @@
         <img class="checkmarkImg" alt="updated" src="../assets/checkMark.png"
              v-show="localMirrorIndex === mirrorIndex && currentID >= 0">
       </div>
+      <timePicker v-show="currentID >= 0" ref = "timePicker"/>
     </form>
 
   <colorsPanel v-show="colorPanelVisible" ref = "colorPanel"/>
@@ -106,12 +107,14 @@
 
 import {deleteArduino, downloadAllArds, uploadArduino} from "@/firebase";
 import ColorsPanel from "@/components/ColorsPanel";
+import timePicker from "@/components/timePicker";
 
 export default {
   name: "ArduinoProperties",
   components:
       {
-        ColorsPanel
+        ColorsPanel,
+        timePicker
       },
   data(){
     return{
