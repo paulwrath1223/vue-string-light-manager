@@ -118,6 +118,7 @@
 
 import {deleteArduino, downloadAllArds, uploadArduino} from "@/firebase";
 import ColorsPanel from "@/components/ColorsPanel";
+import timePicker from "@/components/timePicker";
 import slider from "vue3-slider"
 
 export default {
@@ -126,6 +127,7 @@ export default {
       {
         ColorsPanel,
         "vue3-slider": slider
+        timePicker
       },
   data(){
     return{
@@ -438,8 +440,6 @@ export default {
 .arduinoProperties{
   padding: 20px;
 }
-
-
 
 /*.form-check{*/
 /*  padding: 20px;*/

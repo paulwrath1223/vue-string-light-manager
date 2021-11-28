@@ -6,7 +6,8 @@
 #include <addons/TokenHelper.h>
 #include <addons/RTDBHelper.h>
 #include <EEPROM.h>
- 
+#include <wifi_functions.cpp>
+#include <firebase_stuff.cpp>
 
 // //Comment to exclude Cloud Firestore
 // #define ENABLE_FIRESTORE
@@ -33,7 +34,7 @@ FirebaseConfig config;
 unsigned long dataMillis = 0;
 
 #define DEBUG false
-#define HEAPDEBUG true
+#define HEAPDEBUG false
 
 //Variables
 int i = 0;
@@ -84,6 +85,7 @@ int brightness;
 int memcurr;
 int memlast;
 bool tempBool;
+int errorStatus;
 
 String path;
 String tempPath;
@@ -202,9 +204,13 @@ void loop() {
     {
       if(mirrorIndex == 0 || !waveMode)
       {
-        Serial.println("unmirrored");
+        if(DEBUG)
+        {
+          Serial.println("unmirrored");
+        }
         for(int i=0; i<numPixelsReal; i++)  // For each pixel...
         {
+            if(errorStatus)
             currentColor = colorList[((numColors + (i * int(waveMode)) + waveOffset) % numColors)];
             pixels.setPixelColor(i, currentColor);
             if(DEBUG)
@@ -272,382 +278,6 @@ void loop() {
   }
  
 }
- 
- 
-//-------- Fuctions used for WiFi credentials saving and connecting to it which you do not need to change 
-bool testWifi(void)
-{
-  int c = 0;
-  Serial.println("Waiting for Wifi to connect");
-  while ( c < 60 ) {
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      return true;
-    }
-    delay(500);
-    Serial.print("*");
-    c++;   //lmao
-  }
-  Serial.println("");
-  Serial.println("Connect timed out, opening AP");
-  return false;
-}
- 
-void launchWeb()
-{
-  Serial.println("");
-  if (WiFi.status() == WL_CONNECTED)
-    Serial.println("WiFi connected");
-  Serial.print("Local IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.print("SoftAP IP: ");
-  Serial.println(WiFi.softAPIP());
-  createWebServer();
-  // Start the server
-  server.begin();
-  Serial.println("Server started");
-}
- 
-void setupAP(void)
-{
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
-  delay(100);
-  int n = WiFi.scanNetworks();
-  Serial.println("scan done");
-  if (n == 0)
-    Serial.println("no networks found");
-  else
-  {
-    Serial.print(n);
-    Serial.println(" networks found");
-    for (int i = 0; i < n; ++i)
-    {
-      // Print SSID and RSSI for each network found
-      Serial.print(i + 1);
-      Serial.print(": ");
-      Serial.print(WiFi.SSID(i));
-      Serial.print(" (");
-      Serial.print(WiFi.RSSI(i));
-      Serial.print(")");
-      Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*");
-      delay(10);
-    }
-  }
-  Serial.println("");
-  st = "<ol>";
-  for (int i = 0; i < n; ++i)
-  {
-    // Print SSID and RSSI for each network found
-    st += "<li>";
-    st += WiFi.SSID(i);
-    st += " (";
-    st += WiFi.RSSI(i);
- 
-    st += ")";
-    st += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
-    st += "</li>";
-  }
-  st += "</ol>";
-  delay(100);
-  WiFi.softAP(String("WifiLightController") + localUID, "");
-  Serial.println("softap");
-  launchWeb();
-  Serial.println("over");
-}
- 
-void createWebServer()
-{
- {
-    server.on("/", []() {
- 
-      IPAddress ip = WiFi.softAPIP();
-      String ipStr = String(ip[0]) + String('.') + String(ip[1]) + String('.') + String(ip[2]) + String('.') + String(ip[3]);
-      content = "<!DOCTYPE HTML>\r\n<html>Hello from ESP8266 at ";
-      content += "<form action=\"/scan\" method=\"POST\"><input type=\"submit\" value=\"scan\"></form>";
-      content += ipStr;
-      content += "<p>";
-      content += st;
-      content += "</p><label> Arduino UID: ";
-      content += localUID;
-      content += "</label><form method='get' action='setting'><label>SSID: </label><input name='ssid' length=32><input name='pass' length=64><input type='submit'></form>";
-      content += "</html>";
-      server.send(200, "text/html", content);
-    });
-    server.on("/scan", []() {
-      //setupAP();
-      IPAddress ip = WiFi.softAPIP();
-      String ipStr = String(ip[0]) + String('.') + String(ip[1]) + String('.') + String(ip[2]) + String('.') + String(ip[3]);
- 
-      content = "<!DOCTYPE HTML>\r\n<html>go back";
-      server.send(200, "text/html", content);
-    });
- 
-    server.on("/setting", []() {
-      String qsid = server.arg("ssid");
-      String qpass = server.arg("pass");
-      if (qsid.length() > 0 && qpass.length() > 0) {
-        Serial.println("clearing eeprom");
-        for (int i = 0; i < 96; ++i) {
-          EEPROM.write(i, 0);
-        }
-        Serial.println(qsid);
-        Serial.println("");
-        Serial.println(qpass);
-        Serial.println("");
- 
-        Serial.println("writing eeprom ssid:");
-        for (u_int i = 0; i < qsid.length(); ++i)
-        {
-          EEPROM.write(i, qsid[i]);
-          Serial.print("Wrote: ");
-          Serial.println(qsid[i]);
-        }
-        Serial.println("writing eeprom pass:");
-        for (u_int i = 0; i < qpass.length(); ++i)
-        {
-          EEPROM.write(32 + i, qpass[i]);
-          Serial.print("Wrote: ");
-          Serial.println(qpass[i]);
-        }
-        EEPROM.commit();
- 
-        content = "{\"Success\":\"saved to eeprom... reset to boot into new wifi\"}";
-        statusCode = 200;
-        ESP.reset();
-      } else {
-        content = "{\"Error\":\"404 not found\"}";
-        statusCode = 404;
-        Serial.println("Sending 404");
-      }
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.send(statusCode, "application/json", content);
- 
-    });
-  } 
-}
-
-void updateCloud(bool forceUpdate = false)
-{
-    if(DEBUG)
-    {
-      Serial.println("database query began");
-    }      
-    update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.boolData() : false;
-    state = Firebase.RTDB.getBool(&fbdo, statePath) ? fbdo.boolData() : false;    
-    if(update || forceUpdate)
-    {
-
-        waveMode = Firebase.RTDB.getBool(&fbdo, waveModePath) ? fbdo.boolData() : false;
-
-        speed = Firebase.RTDB.getFloat(&fbdo, speedPath) ? fbdo.floatData() : 0;
-
-        brightness = Firebase.RTDB.getInt(&fbdo, brightnessPath) ? fbdo.intData() : 255;
-        
-        lastNumColors = numColors;
-
-        numColors = Firebase.RTDB.getInt(&fbdo, colorLengthPath) ? fbdo.intData() : 1;
-
-        mirrorIndex = Firebase.RTDB.getInt(&fbdo, mirrorIndexPath) ? fbdo.intData() : 0;
-
-
-        // numColors = Firebase.getInt(fbdo, colorLengthPath);
-
-        numPixelsReal = Firebase.RTDB.getInt(&fbdo, lightLengthPath) ? fbdo.intData() : 1;
-
-        pixels.clear();
-        pixels.show(); // Initialize all pixels to 'off'
-
-  
-        if(numPixelsReal != pixels.numPixels())
-        {
-          pixels.updateLength(numPixelsReal);              // (No) longer used to avoid memory leaks
-        }
-        if(pixels.getBrightness() != brightness)
-        {
-          pixels.setBrightness(constrain(brightness, 0, 255));
-        }
-
-        pixels.clear();
-        pixels.show(); // Initialize all pixels to 'off'
-        if(DEBUG)
-        {
-          Serial.print("beginning color query: ");
-          Serial.print("numColors: ");
-          Serial.println(numColors);
-        }
-        for(int counter = 0; counter<numColors; counter++)
-        {
-          path = colorPath + String(counter) + "/";
-          if(DEBUG)
-          {
-            Serial.print("path: ");
-            Serial.println(path);
-          }
-          r = Firebase.RTDB.getInt(&fbdo, path+"r/") ? fbdo.intData() : 0;
-
-          if(DEBUG)
-          {
-            Serial.print("r: ");
-            Serial.println(r);
-          }
-          g = Firebase.RTDB.getInt(&fbdo, path+"g/") ? fbdo.intData() : 0;
-
-          if(DEBUG)
-          {
-            Serial.print("g: ");
-            Serial.println(g);
-          }
-          b = Firebase.RTDB.getInt(&fbdo, path+"b/") ? fbdo.intData() : 0;
-
-          if(DEBUG)
-          {
-            Serial.print("b: ");
-            Serial.println(b);
-          }
-          // r = Firebase.getInt(fbdo, path+"r/");
-          // g = Firebase.getInt(fbdo, path+"g/");
-          // b = Firebase.getInt(fbdo, path+"b/");
-          colorList[counter] = pixels.Color(r, g, b);
-        }
-        Firebase.RTDB.setBool(&fbdo, updatePath, false);
-//           update = Firebase.RTDB.getBool(&fbdo, updatePath) ? fbdo.to<bool>() : false;
-
-    }
-    if(DEBUG)
-    {
-      Serial.println("database query done :");
-      Serial.print("speed: ");
-      Serial.println(speed);
-      Serial.print("numColors: ");
-      Serial.println(numColors);
-      Serial.print("numPixelsReal: ");
-      Serial.println(numPixelsReal);
-      Serial.print("numPixels according to library: ");
-      Serial.println(pixels.numPixels());
-      Serial.print("mirrorIndex: ");
-      Serial.println(mirrorIndex);
-    }
-
-}
-
-void updatePaths()
-{
-  if(DEBUG)
-  {
-    Serial.println("function: update paths");
-  }
-  tempPath = (String("arduinoUIDs/") + localUID);
-  tempPath += "/associatedUID";
-  Firebase.RTDB.getString(&fbdo, tempPath);
-  tempUUID = fbdo.stringData();
-  tempUUID.replace("\"", "");
-  if(DEBUG)
-  {
-    Serial.println("UUID from bd: " + tempUUID);
-  }
-  if(tempUUID.equals("null"))    //, &UserUID
-  {
-    if(DEBUG)
-    {
-      Serial.println("no uid in database");
-    }
-    Firebase.RTDB.setString(&fbdo, tempPath, String("unclaimed"));
-    tempUUID = "unclaimed";
-  }
-  UserUID = tempUUID;
-  while(UserUID.equals("unclaimed"))
-    {
-      delay(200);
-      tempBool = Firebase.RTDB.getString(&fbdo, tempPath);
-      tempUUID = fbdo.stringData();
-      tempUUID.replace("\"", "");
-      UserUID = tempBool ? tempUUID : "unclaimed";
-      // consider adding "wait for claim" light animation
-
-    }
-  tempPath = (String("arduinoUIDs/") + localUID);
-  tempPath += "/userSpecificID";
-
-  id = Firebase.RTDB.getInt(&fbdo, tempPath) ? fbdo.intData() : -1;
-  
-  basePath = "users/" + UserUID;
-  basePath += "/Arduinos/";
-  basePath += id;
-  updatePath = basePath + "/update";
-  speedPath = basePath + "/speed";
-  lightLengthPath = basePath + "/numLights";
-  colorLengthPath = basePath + "/colorLength";
-  colorPath = basePath+"/colors/";
-  statePath = basePath + "/state";
-  mirrorIndexPath = basePath + "/mirrorIndex";
-  waveModePath = basePath + "/waveMode";
-  brightnessPath = basePath + "/brightness";
-  if(DEBUG)
-  {
-    Serial.println("\n update paths result: \n");
-    Serial.print("basePath: ");
-    Serial.println(basePath);
-  }
-  return;
-}
-
-
-
-
-
-void resetWifi()
-{
-  Serial.println();
-  Serial.println("Disconnecting previously connected WiFi");
-  WiFi.disconnect();
-  delay(10);
-  Serial.println();
-  Serial.println();
-  Serial.println("Startup"); 
-  //---------------------------------------- Read EEPROM for SSID and pass
-  Serial.println("Reading EEPROM ssid");
- 
-  String esid;
-  for (int i = 0; i < 32; ++i)
-  {
-    esid += char(EEPROM.read(i));
-  }
-  Serial.println();
-  Serial.print("SSID: ");
-  Serial.println(esid);
-  Serial.println("Reading EEPROM pass");
-  String epass = "";
-  for (int i = 32; i < 96; ++i)
-  {
-    epass += char(EEPROM.read(i));
-  }
-  Serial.print("PASS: ");
-  Serial.println(epass);
-  WiFi.begin(esid.c_str(), epass.c_str());
-  if (testWifi())
-  {
-    Serial.println("Succesfully Connected!!!");
-  }
-  else
-  {
-    Serial.println("Turning the HotSpot On");
-    launchWeb();
-    setupAP();// Setup HotSpot
-  }
-  Serial.println();
-  Serial.println("Waiting.");
-  
-  while ((WiFi.status() != WL_CONNECTED))
-  {
-    Serial.print(".");
-    delay(100);
-    server.handleClient();
-  }
-}
-
-
-
 
 /*
 
