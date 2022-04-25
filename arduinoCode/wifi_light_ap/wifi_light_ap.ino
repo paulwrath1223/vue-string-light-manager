@@ -106,12 +106,12 @@ uint32_t colorList[300];
 uint32_t currentColor;
 
 
-#define USER_EMAIL "firebase.manage.arduino@gmail.com"
-#define USER_PASSWORD "VjhYHg&yU7hIbjhBvhVt"
+#define USER_EMAIL "{revoked}"
+#define USER_PASSWORD "{revoked}"
 
 
-#define DATABASE_URL "https://light-data1-default-rtdb.firebaseio.com/" 
-#define DATABASE_SECRET "xnsxVJEbZchsxN2XPCkxAPhlZXdvWBt318oq98jh"
+#define DATABASE_URL "{revoked}" 
+#define DATABASE_SECRET "{revoked}"
 
  
 //Establishing Local server at port 80 whenever required
